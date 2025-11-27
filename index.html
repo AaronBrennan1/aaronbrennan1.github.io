@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarah Williams | Software Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00f3ff;
+            --secondary: #bc13fe;
+            --bg: #030303;
+            --text: #ffffff;
+            --text-muted: #9ca3af;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif; /* Cleaner, modern sans */
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        body:hover .cursor-outline.hovered {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: white;
+            backdrop-filter: blur(2px);
+        }
+
+        /* --- Background Animation --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3; /* Subtler */
+        }
+
+        /* --- Utility Classes --- */
+        .glass-panel {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Subtle Gradient Text */
+        .gradient-text {
+            background: linear-gradient(90deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Reveal on Scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Nav Link Hover */
+        .nav-link-item {
+            position: relative;
+        }
+        .nav-link-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        .nav-link-item:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="selection:bg-white selection:text-black">
+
+    <!-- Canvas Background -->
+    <canvas id="canvas-container"></canvas>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 left-0 py-6 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-8">
+            <a href="#" class="text-xl font-bold tracking-tight z-50 hover:opacity-70 transition-opacity">
+                SARAH WILLIAMS<span class="text-cyan-400">.</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-300">
+                <a href="#about" class="hover:text-white transition-colors nav-link nav-link-item">About</a>
+                <a href="#projects" class="hover:text-white transition-colors nav-link nav-link-item">Work</a>
+                <a href="#skills" class="hover:text-white transition-colors nav-link nav-link-item">Expertise</a>
+                <a href="#contact" class="hover:text-white transition-colors nav-link nav-link-item">Contact</a>
+                
+                <a href="/resume.pdf" class="px-5 py-2 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all nav-link text-xs uppercase tracking-wider">
+                    Resume
+                </a>
+            </div>
+
+            <button class="md:hidden text-white text-xl nav-link z-50">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center relative px-6 pt-20">
+        <div class="max-w-6xl w-full z-10 grid md:grid-cols-2 gap-16 items-center">
+            
+            <!-- Hero Text -->
+            <div class="space-y-8 order-2 md:order-1">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs text-gray-300 font-mono tracking-wide">Available for new projects</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
+                    Building the future of <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 animate-gradient bg-300%">digital interaction.</span>
+                </h1>
+                
+                <p class="text-gray-400 text-lg max-w-lg leading-relaxed">
+                    I am a Full Stack Engineer focused on creating accessible, pixel-perfect, and performant web experiences.
+                </p>
+
+                <div class="flex flex-wrap gap-5 pt-4">
+                    <a href="#projects" class="px-8 py-4 bg-white text-black font-semibold rounded-sm hover:bg-gray-200 transition-all nav-link">
+                        View Work
+                    </a>
+                    <a href="#contact" class="px-8 py-4 border border-white/20 text-white font-medium rounded-sm hover:border-white transition-all nav-link">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Graphic (Abstract & Clean) -->
+            <div class="relative h-[500px] w-full flex items-center justify-center order-1 md:order-2 perspective-1000">
+                <!-- Abstract floating cards -->
+                <div class="absolute w-64 h-80 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-xl transform rotate-[-6deg] translate-x-[-20px] shadow-2xl z-10 hover:rotate-[-8deg] transition-all duration-700"></div>
+                
+                <div class="absolute w-64 h-80 glass-panel rounded-xl transform rotate-[6deg] translate-x-[20px] z-20 hover:rotate-[4deg] transition-all duration-700 flex flex-col justify-between p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 font-mono text-xs text-gray-400">
+                        <div class="h-2 bg-white/10 rounded w-3/4"></div>
+                        <div class="h-2 bg-white/10 rounded w-1/2"></div>
+                        <div class="h-2 bg-white/10 rounded w-full"></div>
+                        <div class="h-2 bg-white/10 rounded w-5/6"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-mono text-cyan-400">
+                        <span>compiling...</span>
+                        <span>98%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-30">
+            <i class="fas fa-arrow-down"></i>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 px-6 relative border-t border-white/5">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid md:grid-cols-12 gap-16 items-start">
+                
+                <div class="md:col-span-4 reveal">
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                        <div class="relative rounded-lg overflow-hidden border border-white/10 aspect-[4/5]">
+                            <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sarah Williams" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-8 space-y-8 reveal">
+                    <h2 class="text-3xl font-bold tracking-tight">About Me</h2>
+                    
+                    <div class="space-y-6 text-gray-400 text-lg leading-relaxed">
+                        <p>
+                            I'm a software engineer based in San Francisco with a passion for building digital services/stuff I want. I have a knack for all things launching products, from planning and designing all the way to solving real-life problems with code.
+                        </p>
+                        <p>
+                            Currently, I am working as a Senior Engineer at <span class="text-white">TechCorp</span>, where I focus on scalable system architecture and design systems.
+                        </p>
+                    </div>
+
+                    <div class="pt-8">
+                         <h3 class="text-sm font-mono text-gray-500 uppercase tracking-widest mb-6">Technical Expertise</h3>
+                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <!-- Skill Pills -->
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">JavaScript (ES6+)</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">React & Next.js</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">TypeScript</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">Node.js</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">Python</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">AWS / Cloud</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">PostgreSQL</div>
+                            <div class="px-4 py-3 bg-white/5 border border-white/5 rounded text-sm text-center hover:bg-white/10 transition-colors cursor-default">Docker</div>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-end mb-20 reveal">
+                <h2 class="text-4xl font-bold tracking-tight">Selected Work</h2>
+                <a href="#" class="hidden md:inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors nav-link">
+                    View GitHub <i class="fas fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+
+            <div class="space-y-32">
+                
+                <!-- Project 1 -->
+                <div class="group grid md:grid-cols-12 gap-8 items-center reveal nav-link">
+                    <!-- Image -->
+                    <div class="md:col-span-7 relative order-1">
+                        <div class="relative overflow-hidden rounded-lg bg-gray-900 border border-white/10 aspect-video group-hover:border-white/30 transition-colors">
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Cyber Security Dashboard" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="md:col-span-5 relative order-2">
+                        <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">Neural Threat Detection</h3>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            A cybersecurity dashboard that visualizes network traffic in real-time. Designed for SOC analysts to quickly identify anomalies using a WebGL-powered data visualization layer.
+                        </p>
+                        <div class="flex flex-wrap gap-3 font-mono text-xs text-gray-500 mb-8">
+                            <span class="px-2 py-1 bg-white/5 rounded">React</span>
+                            <span class="px-2 py-1 bg-white/5 rounded">Three.js</span>
+                            <span class="px-2 py-1 bg-white/5 rounded">Python</span>
+                        </div>
+                        <div class="flex gap-6">
+                            <a href="#" class="text-white hover:text-cyan-400 text-sm font-medium border-b border-white/20 pb-1 hover:border-cyan-400 transition-all">Live Demo</a>
+                            <a href="#" class="text-white hover:text-cyan-400 text-sm font-medium border-b border-white/20 pb-1 hover:border-cyan-400 transition-all">Source Code</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group grid md:grid-cols-12 gap-8 items-center reveal nav-link">
+                    <!-- Content (Swapped) -->
+                    <div class="md:col-span-5 relative order-2 md:order-1">
+                        <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">Pathfinding Engine</h3>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            An educational tool for visualizing complex graph algorithms. Features a custom grid system, drag-and-drop obstacles, and real-time performance metrics for A*, Dijkstra, and BFS.
+                        </p>
+                        <div class="flex flex-wrap gap-3 font-mono text-xs text-gray-500 mb-8">
+                            <span class="px-2 py-1 bg-white/5 rounded">TypeScript</span>
+                            <span class="px-2 py-1 bg-white/5 rounded">Vue.js</span>
+                            <span class="px-2 py-1 bg-white/5 rounded">Canvas API</span>
+                        </div>
+                        <div class="flex gap-6">
+                            <a href="#" class="text-white hover:text-purple-400 text-sm font-medium border-b border-white/20 pb-1 hover:border-purple-400 transition-all">Live Demo</a>
+                            <a href="#" class="text-white hover:text-purple-400 text-sm font-medium border-b border-white/20 pb-1 hover:border-purple-400 transition-all">Source Code</a>
+                        </div>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="md:col-span-7 relative order-1 md:order-2">
+                         <div class="relative overflow-hidden rounded-lg bg-gray-900 border border-white/10 aspect-video group-hover:border-white/30 transition-colors">
+                            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Pathfinding" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 px-6 border-t border-white/5">
+        <div class="max-w-3xl mx-auto text-center reveal">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8">Get In Touch</h2>
+            
+            <p class="text-gray-400 text-lg mb-12 leading-relaxed">
+                I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you!
+            </p>
+
+            <a href="mailto:email@example.com" class="inline-block px-10 py-5 bg-white text-black font-semibold rounded-sm hover:bg-gray-200 transition-all transform hover:-translate-y-1 nav-link">
+                Say Hello
+            </a>
+
+            <div class="mt-24 flex justify-center gap-10">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors text-2xl nav-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors text-2xl nav-link"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors text-2xl nav-link"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-gray-600 text-sm">
+        <p>© 2024 Sarah Williams. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Custom Cursor Logic
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Add delay for the outline for a fluid feel
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Add hover effect to interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .nav-link');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.classList.add('hovered');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.classList.remove('hovered');
+            });
+        });
+
+        // Neural Network Canvas Animation (Subtler version)
+        const canvas = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Resize handling
+        const resize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+        
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Particle Class
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.3; // Slower speed
+                this.vy = (Math.random() - 0.5) * 0.3; // Slower speed
+                this.size = Math.random() * 1.5 + 0.5; // Smaller size
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'; // White instead of cyan
+                ctx.fill();
+            }
+        }
+
+        // Initialize particles
+        const particleCount = Math.min(window.innerWidth / 15, 60); // Fewer particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Animation Loop
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+
+                // Draw connections
+                for (let j = index; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.05 - distance/3000})`; // Very subtle lines
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(animate);
+        };
+        animate();
+
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('backdrop-blur-md', 'bg-black/80', 'py-4', 'border-b', 'border-white/5');
+                navbar.classList.remove('py-6');
+            } else {
+                navbar.classList.remove('backdrop-blur-md', 'bg-black/80', 'py-4', 'border-b', 'border-white/5');
+                navbar.classList.add('py-6');
+            }
+        });
+
+    </script>
+</body>
+</html>
