@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -22,7 +22,8 @@
                         bg: '#050505',
                         surface: '#0f0f11',
                         border: '#1f1f22',
-                        primary: '#00f0ff', // Keeping the "Slick" Cyan
+                        primary: '#00f0ff', // Cyber Cyan (kept for the slick hover)
+                        secondary: '#7000ff', 
                         text: '#e0e0e0',
                         muted: '#888888'
                     }
@@ -35,8 +36,17 @@
         body {
             background-color: #050505;
             color: #e0e0e0;
-            cursor: none; /* Custom cursor kept */
+            cursor: none;
             overflow-x: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* --- Subtle Texture Overlay --- */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50;
+            /* Much more subtle scanline effect */
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02));
+            background-size: 100% 3px;
         }
 
         /* --- Scrollbar --- */
@@ -45,48 +55,50 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
 
-        /* --- Custom Cursor (Slightly refined) --- */
+        /* --- Custom Cursor --- */
         .cursor-dot {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
-            width: 4px; height: 4px; background-color: #00f0ff; 
+            width: 6px; height: 6px; background-color: #fff; 
             border-radius: 50%; z-index: 9999; pointer-events: none;
+            mix-blend-mode: difference;
         }
-        .cursor-outline {
+        .cursor-circle {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
-            width: 30px; height: 30px; 
+            width: 40px; height: 40px; 
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             z-index: 9998; pointer-events: none;
-            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
-        
-        body:hover .cursor-outline.hovered {
-            width: 50px; height: 50px; 
+
+        body:hover .cursor-circle.hovered {
+            width: 60px; height: 60px; 
             border-color: #00f0ff;
             background-color: rgba(0, 240, 255, 0.05);
         }
 
-        /* --- Image Styles --- */
+        /* --- Slick Images --- */
         .image-container {
             position: relative;
             overflow: hidden;
-            border: 1px solid #1f1f22;
-            transition: border-color 0.3s ease;
         }
-        .image-container:hover {
-            border-color: #00f0ff;
-        }
-        
         .image-filter {
-            filter: grayscale(100%) contrast(1.1);
-            transition: filter 0.5s ease, transform 0.5s ease;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease, transform 0.7s ease;
         }
         .image-container:hover .image-filter {
-            filter: grayscale(0%) contrast(1);
-            transform: scale(1.02);
+            filter: grayscale(0%);
+            transform: scale(1.03);
         }
 
-        /* --- Modal Transitions --- */
+        /* --- Utility Classes --- */
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Modal Transitions */
         .modal-overlay {
             opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
@@ -97,23 +109,23 @@
         .modal-overlay.active .modal-content { transform: translateX(0); }
     </style>
 </head>
-<body class="antialiased selection:bg-primary selection:text-black">
+<body class="antialiased selection:bg-primary/30 selection:text-white">
 
     <canvas id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10 opacity-[0.03] pointer-events-none"></canvas>
+    <div class="scanlines"></div>
 
     <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+    <div class="cursor-circle"></div>
 
-    <nav class="fixed w-full z-40 top-0 left-0 py-6 border-b border-white/5 bg-bg/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12 text-sm">
-            <div class="flex items-center gap-3 font-medium tracking-wide">
-                <span class="w-2 h-2 bg-primary rounded-full"></span>
-                <span class="text-white">Aaron Brennan</span>
+    <nav class="fixed w-full z-40 top-0 left-0 py-6 border-b border-white/5 glass-nav">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-lg tracking-tight">Aaron Brennan</span>
             </div>
-            <div class="flex space-x-8 text-muted font-sans">
-                <a href="#about" class="hover:text-primary transition-colors interactive">About</a>
-                <a href="#work" class="hover:text-primary transition-colors interactive">Work</a>
-                <a href="#contact" class="hover:text-primary transition-colors interactive">Contact</a>
+            <div class="flex space-x-8 text-sm font-medium text-muted">
+                <a href="#about" class="hover:text-white transition-colors interactive">About</a>
+                <a href="#projects" class="hover:text-white transition-colors interactive">Projects</a>
+                <a href="#contact" class="hover:text-white transition-colors interactive">Contact</a>
             </div>
         </div>
     </nav>
@@ -121,45 +133,44 @@
     <section id="about" class="min-h-screen flex items-center justify-center px-6 pt-24 relative">
         <div class="max-w-6xl w-full grid md:grid-cols-12 gap-12 items-center">
             
-            <div class="md:col-span-4 order-2 md:order-1 relative group">
-                <div class="image-container aspect-[4/5]">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800" 
-                         alt="Aaron Brennan" 
-                         class="w-full h-full object-cover image-filter">
+            <div class="md:col-span-5 order-2 md:order-1 relative group">
+                <div class="relative p-2 border border-white/10">
+                    <div class="aspect-[4/5] overflow-hidden bg-surface relative image-container">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800" 
+                             alt="Aaron Brennan" 
+                             class="w-full h-full object-cover image-filter">
+                    </div>
                 </div>
             </div>
 
-            <div class="md:col-span-8 order-1 md:order-2 space-y-8">
+            <div class="md:col-span-7 order-1 md:order-2 space-y-8">
                 <div>
-                    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none text-white">
+                    <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 leading-[0.9]">
                         Building Digital <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Experiences.</span>
+                        <span class="text-white">Experiences.</span>
                     </h1>
-                    <p class="text-xl text-muted font-light max-w-2xl leading-relaxed">
-                        I build complex digital systems and data-driven experiences. 
-                        My work spans the gap between the biological and the binary—from respiration algorithms to fantasy football analytics.
+                    <div class="h-1 w-20 bg-primary mb-8"></div>
+                    <p class="text-lg md:text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
+                        I'm Aaron, a developer focused on building complex digital systems and data-driven applications. My work spans the gap between biological analysis and software engineering—creating tools that are as robust as they are intuitive.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/10 pt-8">
+                <div class="text-sm text-muted grid grid-cols-2 gap-6 pt-6 max-w-lg border-t border-white/5">
                     <div>
-                        <span class="block text-xs font-mono text-muted mb-1">CURRENT FOCUS</span>
-                        <span class="text-white">Full Stack Systems</span>
+                        <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Current Focus</span>
+                        <span class="text-white">Full Stack & Data Systems</span>
                     </div>
                     <div>
-                        <span class="block text-xs font-mono text-muted mb-1">LOCATION</span>
+                        <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Location</span>
                         <span class="text-white">Dublin, Ireland</span>
                     </div>
                     <div>
-                        <span class="block text-xs font-mono text-muted mb-1">LANGUAGES</span>
-                        <span class="text-white">Python, JS, C++</span>
+                        <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Tech Stack</span>
+                        <span class="text-white">Python, JS, C++, MATLAB</span>
                     </div>
                     <div>
-                        <span class="block text-xs font-mono text-muted mb-1">STATUS</span>
-                        <span class="text-primary flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
-                            Online
-                        </span>
+                        <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Status</span>
+                        <span class="text-primary">Available for hire</span>
                     </div>
                 </div>
             </div>
@@ -167,55 +178,59 @@
         </div>
     </section>
 
-    <section id="work" class="py-24 px-6 border-t border-white/5 bg-surface/30">
+    <section id="projects" class="py-24 px-6 border-t border-white/5 bg-surface/30">
         <div class="max-w-7xl mx-auto">
-            <div class="flex items-end justify-between mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-white">Selected Work</h2>
-                <span class="text-sm font-mono text-muted hidden md:block">01 — 07</span>
+            <div class="flex items-end justify-between mb-16 border-b border-white/10 pb-4">
+                <h2 class="text-3xl font-bold">
+                    Selected Work
+                </h2>
+                <div class="text-xs font-mono text-muted hidden md:block">
+                    07 PROJECTS AVAILABLE
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5" id="projects-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10 border border-white/5" id="projects-grid">
                 </div>
         </div>
     </section>
 
-    <section id="contact" class="py-32 px-6 relative">
-        <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">Let's work together.</h2>
-            <p class="text-muted mb-10 font-light text-lg">
-                This digital garden is always growing. If you're interested in collaboration, 
-                discussing complex systems, or just want to swap data sets, get in touch.
+    <section id="contact" class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto text-center relative z-10">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Let's Work Together</h2>
+            <p class="text-gray-400 mb-10 font-light text-lg">
+                I'm always looking for new challenges. Whether you want to collaborate on a project, 
+                discuss complex systems, or just say hello, feel free to reach out.
             </p>
             
-            <a href="mailto:aaron@example.com" class="interactive inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-medium hover:bg-primary transition-colors rounded-sm">
-                <span>Send me an email</span>
-                <i class="fas fa-arrow-right text-sm"></i>
+            <a href="mailto:aaron@example.com" class="interactive inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold hover:bg-primary transition-colors rounded-sm">
+                <span>Get in Touch</span>
+                <i class="fas fa-arrow-right"></i>
             </a>
         </div>
         
-        <footer class="absolute bottom-6 w-full text-center left-0 text-xs font-mono text-gray-600">
-            AARON BRENNAN © 2024
+        <footer class="absolute bottom-6 w-full text-center left-0 text-xs text-gray-600">
+            &copy; 2024 AARON BRENNAN
         </footer>
     </section>
 
     <div id="project-modal" class="modal-overlay fixed inset-0 z-[100] flex justify-end">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
         
-        <div class="modal-content relative w-full md:w-[600px] h-full bg-[#08080a] border-l border-white/10 shadow-2xl flex flex-col">
+        <div class="modal-content relative w-full md:w-[600px] h-full bg-[#0a0a0a] border-l border-white/10 shadow-2xl flex flex-col">
             
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/50">
-                <div class="font-mono text-xs text-muted uppercase tracking-widest">Project Details</div>
-                <button onclick="closeModal()" class="interactive text-gray-400 hover:text-white transition-colors">
-                    <i class="fas fa-times text-lg"></i>
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface">
+                <div class="font-mono text-xs text-primary uppercase tracking-widest">Project Details</div>
+                <button onclick="closeModal()" class="interactive text-gray-400 hover:text-white transition-colors text-sm">
+                    CLOSE
                 </button>
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
-                <div class="w-full h-64 overflow-hidden mb-8 border border-white/5 relative">
-                    <img id="modal-image" src="" alt="Cover" class="w-full h-full object-cover filter grayscale">
+                <div class="w-full h-64 overflow-hidden mb-8 border border-white/10 relative rounded-sm">
+                    <img id="modal-image" src="" alt="Cover" class="w-full h-full object-cover">
                 </div>
 
-                <div class="flex flex-wrap gap-2 mb-6 font-mono text-xs" id="modal-tags"></div>
+                <div class="flex flex-wrap gap-2 mb-6" id="modal-tags"></div>
                 
                 <h2 id="modal-title" class="text-3xl font-bold mb-2 text-white"></h2>
                 <p id="modal-subtitle" class="text-sm font-mono text-primary mb-8 border-b border-white/10 pb-4 inline-block"></p>
@@ -224,8 +239,8 @@
                     </div>
             </div>
 
-            <div class="p-6 border-t border-white/10 bg-surface/50">
-                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono hover:bg-white hover:text-black hover:border-white transition-all uppercase tracking-wider">
+            <div class="p-6 border-t border-white/10 bg-surface">
+                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono uppercase tracking-wider hover:bg-white hover:text-black hover:border-white transition-all">
                     View Source Code
                 </a>
             </div>
@@ -244,12 +259,12 @@
                 description: 'Real-time breath pattern analysis utilizing custom circuitry and DSP filtering.',
                 body: `
                     <p>Detecting respiration rates accurately in non-invasive ways is a challenge in modern wearable tech. This project bridges the gap between hardware sensors and software analysis.</p>
-                    <h3 class="text-white font-bold mt-4 mb-2">Technical Approach</h3>
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Technical Approach</h3>
                     <p>Standard piezoelectric sensors introduce significant noise when the subject is moving. The goal was to create a filtering algorithm that could isolate the breath wave from motion artifacts.</p>
-                    <ul class="list-none pl-0 space-y-2 mt-4 font-mono text-xs text-gray-400">
-                        <li>> Designed high-gain signal amplification schematics.</li>
-                        <li>> Implemented FFT (Fast Fourier Transform) in SciPy.</li>
-                        <li>> Streamed clean data via MQTT to a React dashboard.</li>
+                    <ul class="list-disc pl-5 space-y-2 mt-4 text-gray-400">
+                        <li>Designed high-gain signal amplification schematics.</li>
+                        <li>Implemented FFT (Fast Fourier Transform) in SciPy.</li>
+                        <li>Streamed clean data via MQTT to a React dashboard.</li>
                     </ul>
                 `
             },
@@ -262,7 +277,7 @@
                 description: 'Predictive modeling for fantasy football utilizing 5 years of historical NFL data.',
                 body: `
                     <p>An experiment in applying statistical rigor to the chaotic world of Fantasy Football. This project focuses on finding value where the general public misses it.</p>
-                    <h3 class="text-white font-bold mt-4 mb-2">The Model</h3>
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Model</h3>
                     <p>I trained a Random Forest Regressor on 5 years of player stats. The model accounts for opponent defense ranking, weather conditions (via API), and player injury history to project weekly points.</p>
                 `
             },
@@ -294,7 +309,7 @@
                 id: 'cobra',
                 title: 'COBRA Toolbox',
                 category: 'Research / Systems Bio',
-                tags: ['MATLAB', 'Bioinformatics', 'Algorithm Optimization'],
+                tags: ['MATLAB', 'Bioinformatics', 'Optimization'],
                 image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
                 description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
                 body: `
@@ -316,14 +331,16 @@
             },
             {
                 id: 'jingle',
-                title: 'Jingle',
-                category: 'Audio Streaming',
-                tags: ['WebRTC', 'Node.js', 'Socket.io'],
+                title: 'Jingle DAW',
+                category: 'Audio Software',
+                tags: ['WebRTC', 'Audio API', 'C++'],
                 image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200',
-                description: 'Collaborative music listening rooms with sub-second latency synchronization.',
+                description: 'A browser-based Digital Audio Workstation for collaborative music production.',
                 body: `
-                    <p>Jingle allows friends to listen to music together in perfect sync, regardless of location. It uses WebSockets to synchronize playback state across clients.</p>
-                    <p>I implemented a custom "drift correction" algorithm that checks the client timestamp against the server every 5 seconds and subtly adjusts playback speed to realign without skipping audio.</p>
+                    <p>Jingle is a lightweight Digital Audio Workstation (DAW) built for the browser. It allows multiple musicians to edit MIDI sequences and record audio tracks in the same session.</p>
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Core Features</h3>
+                    <p>The project leverages WebAssembly for the DSP (Digital Signal Processing) engine to ensure near-native performance for effects like reverb and compression.</p>
+                    <p><em>(Placeholder text: Edit this description to reflect specific features or technical challenges solved during development.)</em></p>
                 `
             }
         ];
@@ -333,24 +350,24 @@
         
         projects.forEach(project => {
             const card = document.createElement('div');
-            // Subtler hover effect, no harsh glitching
-            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-72 flex flex-col justify-between transition-all duration-300 hover:bg-[#111]`;
+            // Using bg-bg to create the grid lines effect against the parent gap
+            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-80 flex flex-col justify-between transition-colors hover:bg-[#111] cursor-none`;
             card.onclick = () => openModal(project.id);
 
             card.innerHTML = `
                 <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="text-muted text-[10px] font-mono tracking-wider uppercase">${project.category}</div>
-                        <i class="fas fa-arrow-right text-white/20 group-hover:text-primary transition-all transform -rotate-45 group-hover:rotate-0 group-hover:translate-x-1"></i>
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-primary/70 text-[10px] font-mono border border-primary/20 px-2 py-1 tracking-wider uppercase">${project.category}</div>
+                        <i class="fas fa-arrow-right text-white/20 group-hover:text-primary transition-colors transform -rotate-45 group-hover:rotate-0"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">${project.title}</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 font-light">
+                    <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-primary transition-colors">${project.title}</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed line-clamp-3">
                         ${project.description}
                     </p>
                 </div>
                 
-                <div class="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    ${project.tags.slice(0,2).map(tag => `<span class="text-[10px] font-mono text-primary/70">#${tag}</span>`).join('')}
+                <div class="flex gap-2 mt-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                    ${project.tags.slice(0,2).map(tag => `<span class="text-[10px] font-mono text-gray-400">#${tag}</span>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
@@ -374,7 +391,7 @@
             modalImage.src = project.image;
             
             modalTags.innerHTML = project.tags.map(tag => 
-                `<span class="text-black bg-gray-200 px-2 py-1 text-[10px] font-bold uppercase rounded-sm">${tag}</span>`
+                `<span class="text-black bg-white px-2 py-1 text-[10px] font-bold font-mono uppercase">${tag}</span>`
             ).join('');
 
             modal.classList.add('active');
@@ -392,7 +409,7 @@
 
         // --- Interaction Logic (Cursor) ---
         const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
+        const cursorCircle = document.querySelector('.cursor-circle');
 
         window.addEventListener('mousemove', (e) => {
             const x = e.clientX;
@@ -401,7 +418,7 @@
             cursorDot.style.left = `${x}px`;
             cursorDot.style.top = `${y}px`;
             
-            cursorOutline.animate({
+            cursorCircle.animate({
                 left: `${x}px`,
                 top: `${y}px`
             }, { duration: 400, fill: "forwards" });
@@ -409,13 +426,13 @@
 
         document.addEventListener('mouseover', (e) => {
             if (e.target.closest('.interactive')) {
-                cursorOutline.classList.add('hovered');
+                cursorCircle.classList.add('hovered');
             } else {
-                cursorOutline.classList.remove('hovered');
+                cursorCircle.classList.remove('hovered');
             }
         });
 
-        // --- Background Noise (Kept extremely subtle) ---
+        // --- Background Noise (Subtle) ---
         const canvas = document.getElementById('canvas-container');
         const ctx = canvas.getContext('2d');
 
@@ -434,13 +451,14 @@
             const len = buffer32.length;
 
             for (let i = 0; i < len; i++) {
-                if (Math.random() < 0.1) {
+                if (Math.random() < 0.05) {
                     buffer32[i] = 0xffffffff;
                 }
             }
             ctx.putImageData(idata, 0, 0);
         }
         
+        // Lower frame rate for noise to save CPU and give "retro" feel
         setInterval(drawNoise, 100);
 
     </script>
