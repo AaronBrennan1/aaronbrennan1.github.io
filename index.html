@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -22,7 +22,7 @@
                         bg: '#050505',
                         surface: '#0f0f11',
                         border: '#1f1f22',
-                        primary: '#00f0ff', // Cyber Cyan (kept for slick accents)
+                        primary: '#00f0ff', // Keeping the "Slick" Cyan
                         text: '#e0e0e0',
                         muted: '#888888'
                     }
@@ -35,16 +35,8 @@
         body {
             background-color: #050505;
             color: #e0e0e0;
-            cursor: none; /* Keeping the custom cursor for the "slick" feel */
+            cursor: none; /* Custom cursor kept */
             overflow-x: hidden;
-        }
-
-        /* --- Texture (Subtle) --- */
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50;
-            /* Very faint overlay for texture, not interference */
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02));
-            background-size: 100% 3px;
         }
 
         /* --- Scrollbar --- */
@@ -53,37 +45,48 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
 
-        /* --- Custom Cursor --- */
+        /* --- Custom Cursor (Slightly refined) --- */
         .cursor-dot {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 4px; height: 4px; background-color: #00f0ff; 
             border-radius: 50%; z-index: 9999; pointer-events: none;
         }
-        .cursor-crosshair {
+        .cursor-outline {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 30px; height: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.2); /* White instead of neon for subtlety */
-            border-radius: 50%; /* Circle instead of square for a softer look */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
             z-index: 9998; pointer-events: none;
-            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+            transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
         }
         
-        body:hover .cursor-crosshair.hovered {
+        body:hover .cursor-outline.hovered {
             width: 50px; height: 50px; 
             border-color: #00f0ff;
             background-color: rgba(0, 240, 255, 0.05);
         }
 
-        /* --- Utilities --- */
+        /* --- Image Styles --- */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1f1f22;
+            transition: border-color 0.3s ease;
+        }
+        .image-container:hover {
+            border-color: #00f0ff;
+        }
+        
         .image-filter {
             filter: grayscale(100%) contrast(1.1);
-            transition: filter 0.5s ease;
+            transition: filter 0.5s ease, transform 0.5s ease;
         }
-        .image-filter:hover {
+        .image-container:hover .image-filter {
             filter: grayscale(0%) contrast(1);
+            transform: scale(1.02);
         }
 
-        /* Modal Transitions */
+        /* --- Modal Transitions --- */
         .modal-overlay {
             opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
@@ -96,18 +99,18 @@
 </head>
 <body class="antialiased selection:bg-primary selection:text-black">
 
-    <canvas id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10 opacity-10 pointer-events-none"></canvas>
-    <div class="scanlines"></div>
+    <canvas id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10 opacity-[0.03] pointer-events-none"></canvas>
 
     <div class="cursor-dot"></div>
-    <div class="cursor-crosshair"></div>
+    <div class="cursor-outline"></div>
 
     <nav class="fixed w-full z-40 top-0 left-0 py-6 border-b border-white/5 bg-bg/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12 font-mono text-xs md:text-sm">
-            <div class="flex items-center gap-4">
-                <span class="text-white font-bold tracking-wider">AARON BRENNAN</span>
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12 text-sm">
+            <div class="flex items-center gap-3 font-medium tracking-wide">
+                <span class="w-2 h-2 bg-primary rounded-full"></span>
+                <span class="text-white">Aaron Brennan</span>
             </div>
-            <div class="flex space-x-8 text-muted">
+            <div class="flex space-x-8 text-muted font-sans">
                 <a href="#about" class="hover:text-primary transition-colors interactive">About</a>
                 <a href="#work" class="hover:text-primary transition-colors interactive">Work</a>
                 <a href="#contact" class="hover:text-primary transition-colors interactive">Contact</a>
@@ -119,36 +122,44 @@
         <div class="max-w-6xl w-full grid md:grid-cols-12 gap-12 items-center">
             
             <div class="md:col-span-4 order-2 md:order-1 relative group">
-                <div class="relative p-2 border border-white/10 transition-colors duration-300 hover:border-primary/50">
-                    <div class="aspect-[4/5] overflow-hidden bg-surface relative">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800" 
-                             alt="Aaron Brennan" 
-                             class="w-full h-full object-cover image-filter">
-                    </div>
+                <div class="image-container aspect-[4/5]">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800" 
+                         alt="Aaron Brennan" 
+                         class="w-full h-full object-cover image-filter">
                 </div>
             </div>
 
             <div class="md:col-span-8 order-1 md:order-2 space-y-8">
                 <div>
-                    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-4 leading-none">
-                        Design.<br>
-                        Development.<br>
-                        <span class="text-primary">Detail.</span>
+                    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none text-white">
+                        Building Digital <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Experiences.</span>
                     </h1>
-                    <div class="h-px w-24 bg-primary mb-6"></div>
-                    <p class="text-lg md:text-xl text-gray-400 font-sans font-light max-w-2xl leading-relaxed">
-                        I'm a software developer based in Dublin who loves building things that live on the web. I focus on creating clean, efficient, and user-friendly experiences, bridging the gap between complex logic and simple design.
+                    <p class="text-xl text-muted font-light max-w-2xl leading-relaxed">
+                        I build complex digital systems and data-driven experiences. 
+                        My work spans the gap between the biological and the binary—from respiration algorithms to fantasy football analytics.
                     </p>
                 </div>
 
-                <div class="font-mono text-xs md:text-sm text-muted grid grid-cols-2 gap-4 border-t border-white/5 pt-6 max-w-lg">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/10 pt-8">
                     <div>
-                        <span class="block text-gray-600 mb-1">FOCUS</span>
-                        <span class="text-white">Full Stack & Data</span>
+                        <span class="block text-xs font-mono text-muted mb-1">CURRENT FOCUS</span>
+                        <span class="text-white">Full Stack Systems</span>
                     </div>
                     <div>
-                        <span class="block text-gray-600 mb-1">LOCATION</span>
+                        <span class="block text-xs font-mono text-muted mb-1">LOCATION</span>
                         <span class="text-white">Dublin, Ireland</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-mono text-muted mb-1">LANGUAGES</span>
+                        <span class="text-white">Python, JS, C++</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-mono text-muted mb-1">STATUS</span>
+                        <span class="text-primary flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                            Online
+                        </span>
                     </div>
                 </div>
             </div>
@@ -158,13 +169,9 @@
 
     <section id="work" class="py-24 px-6 border-t border-white/5 bg-surface/30">
         <div class="max-w-7xl mx-auto">
-            <div class="flex items-end justify-between mb-16 border-b border-white/10 pb-4">
-                <h2 class="text-3xl font-bold font-sans">
-                    Selected Work
-                </h2>
-                <div class="text-xs font-mono text-muted hidden md:block">
-                    SCROLL DOWN
-                </div>
+            <div class="flex items-end justify-between mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Selected Work</h2>
+                <span class="text-sm font-mono text-muted hidden md:block">01 — 07</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5" id="projects-grid">
@@ -172,133 +179,151 @@
         </div>
     </section>
 
-    <section id="contact" class="py-32 px-6 relative overflow-hidden text-center">
-        <div class="max-w-3xl mx-auto relative z-10">
-            <h2 class="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Let's work together.</h2>
-            <p class="text-gray-400 mb-12 font-light">
-                I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you.
+    <section id="contact" class="py-32 px-6 relative">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">Let's work together.</h2>
+            <p class="text-muted mb-10 font-light text-lg">
+                This digital garden is always growing. If you're interested in collaboration, 
+                discussing complex systems, or just want to swap data sets, get in touch.
             </p>
             
-            <a href="mailto:aaron@example.com" class="interactive inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold hover:bg-primary transition-colors rounded-sm">
-                <span>Say Hello</span>
-                <i class="fas fa-arrow-right text-xs"></i> 
+            <a href="mailto:aaron@example.com" class="interactive inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-medium hover:bg-primary transition-colors rounded-sm">
+                <span>Send me an email</span>
+                <i class="fas fa-arrow-right text-sm"></i>
             </a>
         </div>
         
-        <footer class="absolute bottom-6 w-full text-center left-0 text-[10px] font-mono text-gray-600">
-            &copy; 2024 AARON BRENNAN
+        <footer class="absolute bottom-6 w-full text-center left-0 text-xs font-mono text-gray-600">
+            AARON BRENNAN © 2024
         </footer>
     </section>
 
     <div id="project-modal" class="modal-overlay fixed inset-0 z-[100] flex justify-end">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
         
-        <div class="modal-content relative w-full md:w-[600px] h-full bg-[#0a0a0c] border-l border-white/10 shadow-2xl flex flex-col">
+        <div class="modal-content relative w-full md:w-[600px] h-full bg-[#08080a] border-l border-white/10 shadow-2xl flex flex-col">
             
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface">
-                <div class="font-mono text-xs text-primary">Project Details</div>
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface/50">
+                <div class="font-mono text-xs text-muted uppercase tracking-widest">Project Details</div>
                 <button onclick="closeModal()" class="interactive text-gray-400 hover:text-white transition-colors">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
-                <div class="w-full h-64 overflow-hidden mb-8 border border-white/10 relative">
+                <div class="w-full h-64 overflow-hidden mb-8 border border-white/5 relative">
                     <img id="modal-image" src="" alt="Cover" class="w-full h-full object-cover filter grayscale">
                 </div>
 
-                <div class="flex flex-wrap gap-2 mb-6 font-mono text-[10px]" id="modal-tags"></div>
+                <div class="flex flex-wrap gap-2 mb-6 font-mono text-xs" id="modal-tags"></div>
                 
-                <h2 id="modal-title" class="text-3xl font-bold mb-2 text-white font-sans"></h2>
+                <h2 id="modal-title" class="text-3xl font-bold mb-2 text-white"></h2>
                 <p id="modal-subtitle" class="text-sm font-mono text-primary mb-8 border-b border-white/10 pb-4 inline-block"></p>
 
                 <div id="modal-body" class="prose prose-invert prose-sm max-w-none text-gray-300 font-sans font-light leading-relaxed">
                     </div>
             </div>
 
-            <div class="p-6 border-t border-white/10 bg-surface">
-                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono hover:bg-white hover:text-black hover:border-white transition-all rounded-sm">
-                    View Project Code
+            <div class="p-6 border-t border-white/10 bg-surface/50">
+                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono hover:bg-white hover:text-black hover:border-white transition-all uppercase tracking-wider">
+                    View Source Code
                 </a>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Projects Data (Rewritten to be less jargon-heavy) ---
+        // --- Data Repository ---
         const projects = [
             {
                 id: 'respiration',
-                title: 'Health Monitor',
-                category: 'IoT / Wearable',
-                tags: ['Python', 'Hardware', 'Data'],
+                title: 'Respiration Detection',
+                category: 'BioTech / IoT',
+                tags: ['Python', 'Signal Processing', 'IoT', 'Hardware'],
                 image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1200',
-                description: 'A wearable device that tracks breathing patterns during exercise.',
+                description: 'Real-time breath pattern analysis utilizing custom circuitry and DSP filtering.',
                 body: `
-                    <p>Tracking breathing accurately while moving is difficult for most wearable tech. This project attempts to solve that by filtering out the noise created by movement.</p>
-                    <h3 class="text-white font-bold mt-4 mb-2">How it works</h3>
-                    <p>I built a custom sensor setup that attaches to the chest. The software takes the noisy data and uses a custom algorithm to find the actual breathing rhythm, sending the clean data to a phone app in real-time.</p>
+                    <p>Detecting respiration rates accurately in non-invasive ways is a challenge in modern wearable tech. This project bridges the gap between hardware sensors and software analysis.</p>
+                    <h3 class="text-white font-bold mt-4 mb-2">Technical Approach</h3>
+                    <p>Standard piezoelectric sensors introduce significant noise when the subject is moving. The goal was to create a filtering algorithm that could isolate the breath wave from motion artifacts.</p>
+                    <ul class="list-none pl-0 space-y-2 mt-4 font-mono text-xs text-gray-400">
+                        <li>> Designed high-gain signal amplification schematics.</li>
+                        <li>> Implemented FFT (Fast Fourier Transform) in SciPy.</li>
+                        <li>> Streamed clean data via MQTT to a React dashboard.</li>
+                    </ul>
                 `
             },
             {
                 id: 'fantasy',
-                title: 'Sports Predictor',
-                category: 'Data Analysis',
-                tags: ['Python', 'Statistics', 'Web'],
+                title: 'Fantasy Analytics',
+                category: 'Data Science',
+                tags: ['Pandas', 'Scikit-Learn', 'Regression', 'API'],
                 image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=1200',
-                description: 'Using historical NFL data to predict player performance.',
+                description: 'Predictive modeling for fantasy football utilizing 5 years of historical NFL data.',
                 body: `
-                    <p>An experiment in using data to get an edge in Fantasy Football. This tool looks at 5 years of history to find patterns that most people miss.</p>
-                    <h3 class="text-white font-bold mt-4 mb-2">The Approach</h3>
-                    <p>The system looks at factors like weather, opponent ranking, and past injuries. It generates a "score" for each player to help users make better decisions on game day.</p>
+                    <p>An experiment in applying statistical rigor to the chaotic world of Fantasy Football. This project focuses on finding value where the general public misses it.</p>
+                    <h3 class="text-white font-bold mt-4 mb-2">The Model</h3>
+                    <p>I trained a Random Forest Regressor on 5 years of player stats. The model accounts for opponent defense ranking, weather conditions (via API), and player injury history to project weekly points.</p>
                 `
             },
             {
                 id: 'chemistry',
-                title: '3D Molecule Viewer',
-                category: 'Education',
-                tags: ['JavaScript', '3D Graphics'],
+                title: 'Molecular Sim',
+                category: 'Education / WebGL',
+                tags: ['Three.js', 'Physics Engine', 'Education'],
                 image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1200',
-                description: 'An interactive tool for students to visualize chemical bonds.',
+                description: 'Interactive 3D visualization of chemical bonding structures and VSEPR theory.',
                 body: `
-                    <p>Chemistry students often struggle to visualize 3D shapes on 2D paper. This web application helps them see exactly how atoms connect.</p>
-                    <p>Users can drag and drop atoms, and the system automatically snaps them into the correct scientific shape, allowing them to rotate and inspect the molecule from any angle.</p>
+                    <p>Chemistry students often struggle to visualize VSEPR theory and molecular geometry in 2D. This web app renders molecules in real-time 3D.</p>
+                    <p>Users can construct atoms, define bonds, and the physics engine automatically arranges them into the correct geometric shape based on electron repulsion forces.</p>
                 `
             },
             {
                 id: 'magnate',
-                title: 'Magnate Finance',
-                category: 'Mobile App',
-                tags: ['React Native', 'Mobile'],
+                title: 'Magnate',
+                category: 'FinTech',
+                tags: ['React Native', 'Firebase', 'Plaid API'],
                 image: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=1200',
-                description: 'A personal wealth tracker for keeping tabs on savings and investments.',
+                description: 'Personal wealth management aggregator for cross-platform asset tracking.',
                 body: `
-                    <p>Magnate is a mobile app designed to bring all your financial accounts into one view. Instead of logging into three different banking apps, you can see your total net worth in one place.</p>
-                    <p>It connects securely to your banks and updates your balance automatically, even letting you check your status when you don't have internet access.</p>
+                    <p>Magnate is a mobile-first application designed to aggregate investment portfolios, crypto wallets, and savings accounts into a single "Net Worth" view.</p>
+                    <p>The app connects to banking APIs (Plaid) to fetch real-time data. It uses a custom caching layer to ensure data availability even when offline.</p>
                 `
             },
             {
                 id: 'cobra',
-                title: 'Bio-Research Tool',
-                category: 'Academic Research',
-                tags: ['MATLAB', 'Science'],
+                title: 'COBRA Toolbox',
+                category: 'Research / Systems Bio',
+                tags: ['MATLAB', 'Bioinformatics', 'Algorithm Optimization'],
                 image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
-                description: 'Contributing to open-source software used for biological modeling.',
+                description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
                 body: `
-                    <p>During my Master's, I contributed to a software suite used by biologists around the world to model how cells grow.</p>
-                    <p>My focus was on making the calculations faster. By improving the underlying math in the code, we managed to reduce the time it takes to run large simulations by about 15%.</p>
+                    <p>During my Master's, I contributed to the COBRA (Constraint-Based Reconstruction and Analysis) Toolbox. This software suite is the industry standard for modeling metabolic networks.</p>
+                    <p>I focused on optimizing the Flux Balance Analysis (FBA) solver integration. By rewriting the core linear algebra interface, we achieved a 15% speedup in large-scale model simulations.</p>
                 `
             },
             {
                 id: 'pathfinder',
-                title: 'Route Optimizer',
-                category: 'Algorithm Design',
-                tags: ['C++', 'Logistics'],
+                title: 'Equal Dist. Pathfinder',
+                category: 'Algorithms',
+                tags: ['C++', 'Graph Theory', 'Multi-Agent'],
                 image: 'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&q=80&w=1200',
-                description: 'Calculating the most efficient paths for multiple delivery drones.',
+                description: 'Solving the multi-agent routing problem with equal-cost arrival constraints.',
                 body: `
-                    <p>This is a specialized piece of software designed for logistics. Unlike Google Maps which finds a route for one car, this finds routes for a fleet of drones.</p>
-                    <p>It ensures that they all arrive at their destinations at the exact right time without crashing into each other, which is crucial for automated warehouses.</p>
+                    <p>A specialized pathfinding algorithm. Unlike A* which finds the shortest path for one agent, this engine calculates paths for multiple agents such that they arrive at their destinations simultaneously.</p>
+                    <p>This logic is crucial for warehouse robotics and drone swarm coordination where collision avoidance and timing are critical.</p>
+                `
+            },
+            {
+                id: 'jingle',
+                title: 'Jingle',
+                category: 'Audio Streaming',
+                tags: ['WebRTC', 'Node.js', 'Socket.io'],
+                image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200',
+                description: 'Collaborative music listening rooms with sub-second latency synchronization.',
+                body: `
+                    <p>Jingle allows friends to listen to music together in perfect sync, regardless of location. It uses WebSockets to synchronize playback state across clients.</p>
+                    <p>I implemented a custom "drift correction" algorithm that checks the client timestamp against the server every 5 seconds and subtly adjusts playback speed to realign without skipping audio.</p>
                 `
             }
         ];
@@ -308,24 +333,24 @@
         
         projects.forEach(project => {
             const card = document.createElement('div');
-            // Subtle dark background for cards
-            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-72 flex flex-col justify-between transition-colors hover:bg-[#111]`;
+            // Subtler hover effect, no harsh glitching
+            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-72 flex flex-col justify-between transition-all duration-300 hover:bg-[#111]`;
             card.onclick = () => openModal(project.id);
 
             card.innerHTML = `
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="text-primary/70 text-[10px] font-mono border border-primary/20 px-2 py-1 rounded-sm">${project.category}</div>
-                        <i class="fas fa-arrow-right text-white/20 group-hover:text-primary transition-colors transform -rotate-45 group-hover:rotate-0"></i>
+                        <div class="text-muted text-[10px] font-mono tracking-wider uppercase">${project.category}</div>
+                        <i class="fas fa-arrow-right text-white/20 group-hover:text-primary transition-all transform -rotate-45 group-hover:rotate-0 group-hover:translate-x-1"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 font-sans group-hover:text-primary transition-colors">${project.title}</h3>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">${project.title}</h3>
                     <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 font-light">
                         ${project.description}
                     </p>
                 </div>
                 
-                <div class="flex gap-2 mt-4 opacity-40 group-hover:opacity-100 transition-opacity">
-                    ${project.tags.slice(0,2).map(tag => `<span class="text-[10px] font-mono text-gray-400">#${tag}</span>`).join('')}
+                <div class="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    ${project.tags.slice(0,2).map(tag => `<span class="text-[10px] font-mono text-primary/70">#${tag}</span>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
@@ -349,7 +374,7 @@
             modalImage.src = project.image;
             
             modalTags.innerHTML = project.tags.map(tag => 
-                `<span class="text-black bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-sm">${tag}</span>`
+                `<span class="text-black bg-gray-200 px-2 py-1 text-[10px] font-bold uppercase rounded-sm">${tag}</span>`
             ).join('');
 
             modal.classList.add('active');
@@ -367,7 +392,7 @@
 
         // --- Interaction Logic (Cursor) ---
         const cursorDot = document.querySelector('.cursor-dot');
-        const cursorCrosshair = document.querySelector('.cursor-crosshair');
+        const cursorOutline = document.querySelector('.cursor-outline');
 
         window.addEventListener('mousemove', (e) => {
             const x = e.clientX;
@@ -376,7 +401,7 @@
             cursorDot.style.left = `${x}px`;
             cursorDot.style.top = `${y}px`;
             
-            cursorCrosshair.animate({
+            cursorOutline.animate({
                 left: `${x}px`,
                 top: `${y}px`
             }, { duration: 400, fill: "forwards" });
@@ -384,20 +409,19 @@
 
         document.addEventListener('mouseover', (e) => {
             if (e.target.closest('.interactive')) {
-                cursorCrosshair.classList.add('hovered');
+                cursorOutline.classList.add('hovered');
             } else {
-                cursorCrosshair.classList.remove('hovered');
+                cursorOutline.classList.remove('hovered');
             }
         });
 
-        // --- Minimal Background Noise (Reduced Intensity) ---
+        // --- Background Noise (Kept extremely subtle) ---
         const canvas = document.getElementById('canvas-container');
         const ctx = canvas.getContext('2d');
-        let width, height;
 
         function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
         window.addEventListener('resize', resize);
         resize();
@@ -410,15 +434,14 @@
             const len = buffer32.length;
 
             for (let i = 0; i < len; i++) {
-                if (Math.random() < 0.02) { // Reduced density of noise
+                if (Math.random() < 0.1) {
                     buffer32[i] = 0xffffffff;
                 }
             }
             ctx.putImageData(idata, 0, 0);
         }
         
-        // Slower framerate for less frantic feel
-        setInterval(drawNoise, 150);
+        setInterval(drawNoise, 100);
 
     </script>
 </body>
