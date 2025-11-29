@@ -3,31 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aaron Brennan</title>
+    <title>S. Williams | Digital Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        // Moving away from absolute black/neon to sophisticated Zinc/Slate
-                        bg: '#18181b', // Zinc-900
-                        card: '#27272a', // Zinc-800
-                        textMain: '#f4f4f5', // Zinc-100
-                        textMuted: '#a1a1aa', // Zinc-400
-                        accent: '#e4e4e7', // Zinc-200 (Subtle highlight)
+                        bg: '#030303',
+                        surface: '#0d0d0f',
+                        border: '#1f1f22',
+                        primary: '#00f0ff', // Cyber Cyan
+                        secondary: '#7000ff', // Deep Purple
+                        text: '#e0e0e0',
+                        muted: '#6b7280'
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'blink': 'blink 1s step-end infinite',
+                        'scan': 'scan 8s linear infinite',
+                    },
+                    keyframes: {
+                        blink: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0 } },
+                        scan: { '0%': { backgroundPosition: '0% 0%' }, '100%': { backgroundPosition: '0% 100%' } }
                     }
                 }
             }
@@ -36,208 +42,349 @@
 
     <style>
         body {
-            background-color: #18181b;
-            color: #f4f4f5;
+            background-color: #030303;
+            color: #e0e0e0;
+            cursor: none;
+            overflow-x: hidden;
         }
 
-        /* Subtle scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #18181b; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+        /* --- Scanlines Overlay --- */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+        }
 
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #030303; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+
+        /* --- Custom Cursor --- */
+        .cursor-dot {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            width: 4px; height: 4px; background-color: #00f0ff; 
+            border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-crosshair {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            width: 30px; height: 30px; 
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            z-index: 9998; pointer-events: none;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        /* Crosshair lines */
+        .cursor-crosshair::before, .cursor-crosshair::after {
+            content: ''; position: absolute; top: 50%; left: 50%; background: rgba(0, 240, 255, 0.5); transform: translate(-50%, -50%);
+        }
+        .cursor-crosshair::before { width: 100%; height: 1px; }
+        .cursor-crosshair::after { width: 1px; height: 100%; }
+
+        body:hover .cursor-crosshair.hovered {
+            width: 50px; height: 50px; border-color: #00f0ff;
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+
+        /* --- Glitch / Tech Utilities --- */
+        .tech-border {
+            border: 1px solid #1f1f22;
+            position: relative;
+        }
+        .tech-border::before {
+            content: ''; position: absolute; top: -1px; left: -1px; width: 8px; height: 8px;
+            border-top: 2px solid #00f0ff; border-left: 2px solid #00f0ff;
+            transition: all 0.3s ease;
+        }
+        .tech-border:hover::before { width: 100%; height: 100%; opacity: 0.1; background: #00f0ff; border: none; }
+
+        .image-filter {
+            filter: grayscale(100%) contrast(1.1);
+            transition: filter 0.5s ease;
+        }
+        .image-filter:hover {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* Modal Transitions */
         .modal-overlay {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            opacity: 0; visibility: hidden;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
         .modal-content {
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .modal-overlay.active .modal-content {
-            transform: translateY(0);
-        }
-        
-        /* Soft image fade in */
-        .img-load-transition {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
+        .modal-overlay.active .modal-content { transform: translateX(0); }
     </style>
 </head>
-<body class="antialiased font-sans leading-relaxed">
+<body class="antialiased selection:bg-primary selection:text-black">
 
-    <nav class="fixed w-full z-40 top-0 left-0 py-6 bg-bg/90 backdrop-blur-md border-b border-white/5">
-        <div class="max-w-4xl mx-auto flex justify-between items-center px-6">
-            <a href="#" class="font-serif italic text-lg text-white hover:text-gray-300 transition-colors">A. Brennan</a>
-            <div class="flex items-center space-x-6 text-sm font-medium text-textMuted">
-                <a href="#about" class="hover:text-white transition-colors">About</a>
-                <a href="#projects" class="hover:text-white transition-colors">Selected Work</a>
-                <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+    <canvas id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10 opacity-20 pointer-events-none"></canvas>
+    <div class="scanlines"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-crosshair"></div>
+
+    <nav class="fixed w-full z-40 top-0 left-0 py-6 border-b border-white/5 bg-bg/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12 font-mono text-xs md:text-sm">
+            <div class="flex items-center gap-4">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-blink"></span>
+                <span class="text-muted">usr/sarah_williams/home</span>
+            </div>
+            <div class="flex space-x-8 text-muted">
+                <a href="#about" class="hover:text-primary transition-colors interactive">[01] ID</a>
+                <a href="#repository" class="hover:text-primary transition-colors interactive">[02] REPO</a>
+                <a href="#comms" class="hover:text-primary transition-colors interactive">[03] COMMS</a>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto px-6 pt-32 pb-20">
-        
-        <section id="about" class="mb-32 animate-fade-in opacity-0">
-            <div class="flex flex-col md:flex-row gap-10 md:items-start">
-                
-                <div class="shrink-0">
-                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-zinc-800 overflow-hidden border-2 border-zinc-700 relative">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" 
-                             alt="Profile Photo" 
-                             class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-500">
+    <section id="about" class="min-h-screen flex items-center justify-center px-6 pt-24 relative">
+        <div class="max-w-6xl w-full grid md:grid-cols-12 gap-12 items-center">
+            
+            <div class="md:col-span-4 order-2 md:order-1 relative group">
+                <div class="relative tech-border p-2">
+                    <div class="aspect-[4/5] overflow-hidden bg-surface relative">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800" 
+                             alt="Profile" 
+                             class="w-full h-full object-cover image-filter">
+                        
+                        <div class="absolute bottom-2 left-2 font-mono text-[10px] text-primary/80">
+                            ID: SW_882<br>
+                            STATUS: ONLINE
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="space-y-6">
+            <div class="md:col-span-8 order-1 md:order-2 space-y-8">
+                <div>
+                    <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-4 leading-none">
+                        ENGINEERING <br>
+                        THE <span class="text-primary">ABSTRACT</span>
+                    </h1>
+                    <div class="h-px w-24 bg-primary mb-6"></div>
+                    <p class="text-lg md:text-xl text-gray-400 font-sans font-light max-w-2xl leading-relaxed">
+                        I build complex digital systems and data-driven experiences. 
+                        My work spans the gap between the biological and the binary—from respiration algorithms to fantasy football analytics.
+                    </p>
+                </div>
+
+                <div class="font-mono text-xs md:text-sm text-muted grid grid-cols-2 gap-4 border-t border-white/5 pt-6 max-w-lg">
                     <div>
-                        <h1 class="text-3xl md:text-4xl font-serif text-white mb-2">Aaron Brennan</h1>
-                        <p class="text-textMuted">Software Engineer & Data Enthusiast</p>
+                        <span class="block text-gray-500 mb-1">CURRENT FOCUS</span>
+                        <span class="text-white">Full Stack & Data Systems</span>
                     </div>
-
-                    <div class="prose prose-invert max-w-none text-gray-300 font-light text-lg">
-                        <p>
-                            Hello. I'm a developer based in Dublin. I enjoy building tools that solve actual problems, whether that involves crunching data or designing intuitive interfaces.
-                        </p>
-                        <p>
-                            Currently, I'm focused on full-stack web development and exploring how data visualization can make complex information more accessible. When I'm not coding, I'm usually hiking, reading sci-fi, or attempting to bake the perfect sourdough.
-                        </p>
+                    <div>
+                        <span class="block text-gray-500 mb-1">LOCATION</span>
+                        <span class="text-white">Dublin, Ireland</span>
                     </div>
-
-                    <div class="flex gap-4 pt-2">
-                        <a href="#" class="text-sm border-b border-white/20 hover:border-white pb-0.5 transition-colors">
-                            <i class="fab fa-github mr-2"></i>GitHub
-                        </a>
-                        <a href="#" class="text-sm border-b border-white/20 hover:border-white pb-0.5 transition-colors">
-                            <i class="fab fa-linkedin mr-2"></i>LinkedIn
-                        </a>
+                    <div>
+                        <span class="block text-gray-500 mb-1">LANGUAGES</span>
+                        <span class="text-white">Python, JS, C++, MATLAB</span>
+                    </div>
+                    <div>
+                        <span class="block text-gray-500 mb-1">LAST COMMIT</span>
+                        <span class="text-primary animate-pulse">Just now</span>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section id="projects" class="mb-32">
-            <h2 class="text-xl font-serif italic mb-10 border-b border-zinc-800 pb-4">Selected Projects</h2>
+        </div>
+    </section>
+
+    <section id="repository" class="py-24 px-6 border-t border-white/5 bg-surface/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-end justify-between mb-16 border-b border-white/10 pb-4">
+                <h2 class="text-3xl font-bold font-mono">
+                    <span class="text-primary mr-2">/</span>repository
+                </h2>
+                <div class="text-xs font-mono text-muted hidden md:block">
+                    INDEXING 7 ITEMS...
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5" id="projects-grid">
+                </div>
+        </div>
+    </section>
+
+    <section id="comms" class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto text-center relative z-10">
+            <div class="inline-block px-4 py-1 border border-primary/30 rounded-full bg-primary/5 text-primary text-xs font-mono mb-6">
+                SIGNAL STATUS: OPEN
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Establish Connection</h2>
+            <p class="text-gray-400 mb-12 font-light">
+                This digital garden is always growing. If you're interested in collaboration, 
+                discussing complex systems, or just want to swap data sets, initiate a transmission.
+            </p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="projects-grid">
-                </div>
-        </section>
-
-        <section id="contact" class="mb-20">
-            <div class="bg-zinc-800/30 rounded-lg p-8 md:p-12 text-center border border-white/5">
-                <h2 class="text-2xl font-serif mb-4">Get in touch</h2>
-                <p class="text-textMuted mb-8 max-w-lg mx-auto">
-                    I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
-                </p>
-                <a href="mailto:sarah@example.com" class="inline-block px-8 py-3 bg-white text-zinc-900 rounded font-medium hover:bg-zinc-200 transition-colors">
-                    Send an Email
-                </a>
-            </div>
-        </section>
-
-        <footer class="text-center text-xs text-zinc-600 pb-8">
-            <p>&copy; 2024 Sarah Williams. All rights reserved.</p>
-        </footer>
-
-    </main>
-
-    <div id="project-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-zinc-900/80 backdrop-blur-sm" onclick="closeModal()"></div>
+            <a href="mailto:sarah@example.com" class="interactive inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold hover:bg-primary transition-colors">
+                <i class="fas fa-terminal text-xs"></i> 
+                <span>INITIATE_EMAIL_PROTOCOL()</span>
+            </a>
+        </div>
         
-        <div class="modal-content relative w-full max-w-3xl max-h-[90vh] bg-[#18181b] border border-zinc-700 shadow-2xl rounded-lg overflow-y-auto flex flex-col">
-            
-            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors">
-                <i class="fas fa-times text-sm"></i>
-            </button>
+        <footer class="absolute bottom-6 w-full text-center left-0 text-[10px] font-mono text-gray-600">
+            SARAH WILLIAMS © 2024 // SYSTEM VER 2.0
+        </footer>
+    </section>
 
-            <div class="w-full h-64 md:h-80 shrink-0">
-                <img id="modal-image" src="" alt="Project Cover" class="w-full h-full object-cover opacity-90">
+    <div id="project-modal" class="modal-overlay fixed inset-0 z-[100] flex justify-end">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <div class="modal-content relative w-full md:w-[600px] h-full bg-[#050505] border-l border-white/10 shadow-2xl flex flex-col">
+            
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-surface">
+                <div class="font-mono text-xs text-primary">:: PROJECT_DETAILS</div>
+                <button onclick="closeModal()" class="interactive text-gray-400 hover:text-white transition-colors">
+                    [CLOSE]
+                </button>
             </div>
 
-            <div class="p-8 md:p-10">
-                <div class="mb-6">
-                    <span id="modal-category" class="text-xs tracking-wider uppercase text-zinc-500 mb-2 block"></span>
-                    <h2 id="modal-title" class="text-3xl font-serif text-white mb-4"></h2>
-                    <div id="modal-tags" class="flex flex-wrap gap-2"></div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+                <div class="w-full h-64 overflow-hidden mb-8 border border-white/10 relative">
+                    <img id="modal-image" src="" alt="Cover" class="w-full h-full object-cover filter grayscale">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
 
-                <div id="modal-body" class="prose prose-invert prose-zinc max-w-none text-gray-400 font-light">
-                    </div>
+                <div class="flex flex-wrap gap-2 mb-6 font-mono text-[10px]" id="modal-tags"></div>
                 
-                <div class="mt-8 pt-6 border-t border-zinc-800">
-                    <a href="#" class="inline-flex items-center text-sm font-medium hover:text-white transition-colors">
-                        View Source Code <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
+                <h2 id="modal-title" class="text-3xl font-bold mb-2 text-white"></h2>
+                <p id="modal-subtitle" class="text-sm font-mono text-primary mb-8 border-b border-white/10 pb-4 inline-block"></p>
+
+                <div id="modal-body" class="prose prose-invert prose-sm max-w-none text-gray-300 font-sans font-light leading-relaxed">
+                    </div>
+            </div>
+
+            <div class="p-6 border-t border-white/10 bg-surface">
+                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono hover:bg-white hover:text-black hover:border-white transition-all">
+                    VIEW_SOURCE_CODE
+                </a>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Clean Data Structure ---
+        // --- Data Repository ---
         const projects = [
             {
                 id: 'respiration',
-                title: 'Respiration Monitor',
-                category: 'Hardware & Software',
-                tags: ['Python', 'IoT', 'Data Analysis'],
-                image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=800',
-                summary: 'An experiment in non-invasive health tracking using custom sensors.',
-                body: `<p>This project began as an attempt to solve a specific problem: getting accurate respiration data without uncomfortable chest straps. I built a custom hardware prototype and wrote a Python script to filter the noisy signal data.</p>`
+                title: 'Respiration Detection',
+                category: 'BioTech / IoT',
+                tags: ['Python', 'Signal Processing', 'IoT', 'Hardware'],
+                image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1200',
+                description: 'Real-time breath pattern analysis utilizing custom circuitry and DSP filtering.',
+                body: `
+                    <p>Detecting respiration rates accurately in non-invasive ways is a challenge in modern wearable tech. This project bridges the gap between hardware sensors and software analysis.</p>
+                    <h3 class="text-white font-bold mt-4 mb-2">Technical Approach</h3>
+                    <p>Standard piezoelectric sensors introduce significant noise when the subject is moving. The goal was to create a filtering algorithm that could isolate the breath wave from motion artifacts.</p>
+                    <ul class="list-none pl-0 space-y-2 mt-4 font-mono text-xs text-gray-400">
+                        <li>> Designed high-gain signal amplification schematics.</li>
+                        <li>> Implemented FFT (Fast Fourier Transform) in SciPy.</li>
+                        <li>> Streamed clean data via MQTT to a React dashboard.</li>
+                    </ul>
+                `
             },
             {
-                id: 'finance',
-                title: 'Personal Finance Dashboard',
-                category: 'Web Application',
-                tags: ['React', 'Firebase', 'API'],
-                image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
-                summary: 'A clean dashboard for aggregating monthly expenses and investment goals.',
-                body: `<p>I wanted a unified view of my finances that standard banking apps didn't provide. This app pulls data from several sources and visualizes monthly burn rates vs. savings goals.</p>`
+                id: 'fantasy',
+                title: 'Fantasy Analytics',
+                category: 'Data Science',
+                tags: ['Pandas', 'Scikit-Learn', 'Regression', 'API'],
+                image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=1200',
+                description: 'Predictive modeling for fantasy football utilizing 5 years of historical NFL data.',
+                body: `
+                    <p>An experiment in applying statistical rigor to the chaotic world of Fantasy Football. This project focuses on finding value where the general public misses it.</p>
+                    <h3 class="text-white font-bold mt-4 mb-2">The Model</h3>
+                    <p>I trained a Random Forest Regressor on 5 years of player stats. The model accounts for opponent defense ranking, weather conditions (via API), and player injury history to project weekly points.</p>
+                `
             },
             {
-                id: 'visualizer',
-                title: 'Algorithm Visualizer',
-                category: 'Educational Tool',
-                tags: ['JavaScript', 'Canvas', 'Math'],
-                image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=800',
-                summary: 'Helping students understand pathfinding algorithms through interactive animation.',
-                body: `<p>Visualizing Dijkstra's Algorithm and A* pathfinding. This tool allows users to draw walls and weights on a grid to see how different algorithms navigate obstacles in real-time.</p>`
+                id: 'chemistry',
+                title: 'Molecular Sim',
+                category: 'Education / WebGL',
+                tags: ['Three.js', 'Physics Engine', 'Education'],
+                image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1200',
+                description: 'Interactive 3D visualization of chemical bonding structures and VSEPR theory.',
+                body: `
+                    <p>Chemistry students often struggle to visualize VSEPR theory and molecular geometry in 2D. This web app renders molecules in real-time 3D.</p>
+                    <p>Users can construct atoms, define bonds, and the physics engine automatically arranges them into the correct geometric shape based on electron repulsion forces.</p>
+                `
             },
             {
-                id: 'bot',
-                title: 'Discord Music Bot',
-                category: 'Backend',
-                tags: ['Node.js', 'WebSockets'],
-                image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?auto=format&fit=crop&q=80&w=800',
-                summary: 'A lightweight music bot for private servers with playlist management.',
-                body: `<p>built to handle high-quality audio streaming with low latency. It supports queue management, custom playlists, and integrates with Spotify and YouTube APIs.</p>`
+                id: 'magnate',
+                title: 'Magnate',
+                category: 'FinTech',
+                tags: ['React Native', 'Firebase', 'Plaid API'],
+                image: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=1200',
+                description: 'Personal wealth management aggregator for cross-platform asset tracking.',
+                body: `
+                    <p>Magnate is a mobile-first application designed to aggregate investment portfolios, crypto wallets, and savings accounts into a single "Net Worth" view.</p>
+                    <p>The app connects to banking APIs (Plaid) to fetch real-time data. It uses a custom caching layer to ensure data availability even when offline.</p>
+                `
+            },
+            {
+                id: 'cobra',
+                title: 'COBRA Toolbox',
+                category: 'Research / Systems Bio',
+                tags: ['MATLAB', 'Bioinformatics', 'Algorithm Optimization'],
+                image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
+                description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
+                body: `
+                    <p>During my Master's, I contributed to the COBRA (Constraint-Based Reconstruction and Analysis) Toolbox. This software suite is the industry standard for modeling metabolic networks.</p>
+                    <p>I focused on optimizing the Flux Balance Analysis (FBA) solver integration. By rewriting the core linear algebra interface, we achieved a 15% speedup in large-scale model simulations.</p>
+                `
+            },
+            {
+                id: 'pathfinder',
+                title: 'Equal Dist. Pathfinder',
+                category: 'Algorithms',
+                tags: ['C++', 'Graph Theory', 'Multi-Agent'],
+                image: 'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&q=80&w=1200',
+                description: 'Solving the multi-agent routing problem with equal-cost arrival constraints.',
+                body: `
+                    <p>A specialized pathfinding algorithm. Unlike A* which finds the shortest path for one agent, this engine calculates paths for multiple agents such that they arrive at their destinations simultaneously.</p>
+                    <p>This logic is crucial for warehouse robotics and drone swarm coordination where collision avoidance and timing are critical.</p>
+                `
+            },
+            {
+                id: 'jingle',
+                title: 'Jingle',
+                category: 'Audio Streaming',
+                tags: ['WebRTC', 'Node.js', 'Socket.io'],
+                image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200',
+                description: 'Collaborative music listening rooms with sub-second latency synchronization.',
+                body: `
+                    <p>Jingle allows friends to listen to music together in perfect sync, regardless of location. It uses WebSockets to synchronize playback state across clients.</p>
+                    <p>I implemented a custom "drift correction" algorithm that checks the client timestamp against the server every 5 seconds and subtly adjusts playback speed to realign without skipping audio.</p>
+                `
             }
         ];
 
-        // --- Render Projects ---
+        // --- Render Logic ---
         const grid = document.getElementById('projects-grid');
         
         projects.forEach(project => {
             const card = document.createElement('div');
-            // Minimal card styling
-            card.className = "group cursor-pointer";
+            // Using bg-bg to create the grid lines effect against the parent gap
+            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-72 flex flex-col justify-between transition-colors hover:bg-[#111]`;
             card.onclick = () => openModal(project.id);
 
             card.innerHTML = `
-                <div class="aspect-video w-full overflow-hidden rounded-md bg-zinc-800 mb-4 border border-white/5 relative">
-                    <img src="${project.image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
-                </div>
                 <div>
-                    <div class="flex justify-between items-baseline mb-1">
-                        <h3 class="text-lg font-medium text-white group-hover:underline decoration-1 underline-offset-4">${project.title}</h3>
-                        <span class="text-xs text-zinc-500">${project.category}</span>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-primary/70 text-[10px] font-mono border border-primary/20 px-2 py-1">${project.category}</div>
+                        <i class="fas fa-arrow-right text-white/20 group-hover:text-primary transition-colors transform -rotate-45 group-hover:rotate-0"></i>
                     </div>
-                    <p class="text-sm text-zinc-400 leading-relaxed">${project.summary}</p>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">${project.title}</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                        ${project.description}
+                    </p>
+                </div>
+                
+                <div class="flex gap-2 mt-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                    ${project.tags.slice(0,2).map(tag => `<span class="text-[10px] font-mono text-gray-400">#${tag}</span>`).join('')}
                 </div>
             `;
             grid.appendChild(card);
@@ -246,7 +393,7 @@
         // --- Modal Logic ---
         const modal = document.getElementById('project-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalCategory = document.getElementById('modal-category');
+        const modalSubtitle = document.getElementById('modal-subtitle');
         const modalBody = document.getElementById('modal-body');
         const modalImage = document.getElementById('modal-image');
         const modalTags = document.getElementById('modal-tags');
@@ -256,12 +403,12 @@
             if (!project) return;
 
             modalTitle.innerText = project.title;
-            modalCategory.innerText = project.category;
+            modalSubtitle.innerText = project.category;
             modalBody.innerHTML = project.body;
             modalImage.src = project.image;
             
             modalTags.innerHTML = project.tags.map(tag => 
-                `<span class="text-[10px] px-2 py-1 bg-zinc-800 rounded text-zinc-300 border border-zinc-700 uppercase tracking-wider">${tag}</span>`
+                `<span class="text-black bg-white px-2 py-1 text-[10px] font-bold uppercase">${tag}</span>`
             ).join('');
 
             modal.classList.add('active');
@@ -276,6 +423,62 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+
+        // --- Interaction Logic (Cursor) ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCrosshair = document.querySelector('.cursor-crosshair');
+
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            cursorDot.style.left = `${x}px`;
+            cursorDot.style.top = `${y}px`;
+            
+            cursorCrosshair.animate({
+                left: `${x}px`,
+                top: `${y}px`
+            }, { duration: 400, fill: "forwards" });
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.interactive')) {
+                cursorCrosshair.classList.add('hovered');
+            } else {
+                cursorCrosshair.classList.remove('hovered');
+            }
+        });
+
+        // --- Minimal Background Noise ---
+        const canvas = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Draw static noise
+        function drawNoise() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const idata = ctx.createImageData(w, h);
+            const buffer32 = new Uint32Array(idata.data.buffer);
+            const len = buffer32.length;
+
+            for (let i = 0; i < len; i++) {
+                if (Math.random() < 0.05) {
+                    buffer32[i] = 0xffffffff;
+                }
+            }
+            ctx.putImageData(idata, 0, 0);
+        }
+        
+        // Lower frame rate for noise to save CPU and give "retro" feel
+        setInterval(drawNoise, 100);
 
     </script>
 </body>
