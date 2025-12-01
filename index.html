@@ -327,15 +327,46 @@
                 `
             },
             {
-                id: 'chemistry',
-                title: 'Molecular Sim',
-                category: 'Education / WebGL',
-                tags: ['Three.js', 'Physics Engine', 'Education'],
-                image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1200',
-                description: 'Interactive 3D visualization of chemical bonding structures and VSEPR theory.',
+                id: 'chem-predictor',
+                title: 'Reaction Mechanism Predictor',
+                category: 'Cheminformatics / Education',
+                tags: ['Python', 'RDKit', 'Algorithms', 'Flask'],
+                image: 'https://images.unsplash.com/photo-1603126857599-f6e1b70d4c18?auto=format&fit=crop&q=80&w=1200',
+                description: 'A rule-based expert system utilizing RDKit to predict organic reaction pathways (SN1/SN2/E1/E2) based on substrate topology and conditions.',
                 body: `
-                    <p>Chemistry students often struggle to visualize VSEPR theory and molecular geometry in 2D. This web app renders molecules in real-time 3D.</p>
-                    <p>Users can construct atoms, define bonds, and the physics engine automatically arranges them into the correct geometric shape based on electron repulsion forces.</p>
+                    <p>Organic chemistry students often treat reaction mechanisms as rote memorization. I built this tool to demonstrate the logic behind reactivity, using a Python backend to analyze molecular graphs in real-time.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Graph-Based Substrate Analysis</h3>
+                    <p>Instead of using machine learning (which can be a "black box"), this project uses <strong>RDKit</strong> to perform deterministic graph traversal. The algorithm identifies the $\alpha$-carbon and analyzes its connectivity to determine steric hindrance and resonance capabilities.</p>
+                    <p>It programmatically detects complex structural features:</p>
+                    <ul class="list-disc list-inside text-gray-400 mt-2 space-y-1">
+                        <li><strong>Neopentyl centers:</strong> Detecting beta-branching that hinders $S_N2$ attacks.</li>
+                        <li><strong>Allylic/Benzylic stabilization:</strong> Checking for conjugated $\pi$-systems that stabilize carbocation intermediates.</li>
+                        <li><strong>Carbocation Rearrangement:</strong> Algorithms that predict if a 1,2-hydride or methyl shift will occur to form a more stable tertiary center.</li>
+                    </ul>
+
+                    
+
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Scoring Engine</h3>
+                    <p>The core logic uses a weighted scoring matrix to rank competing mechanisms ($S_N1$, $S_N2$, $E1$, $E2$). The system evaluates the environmental conditions against the substrate's physical properties.</p>
+                    <p>For example, the engine evaluates the solvent's dielectric capability (Polar Protic vs. Aprotic) and the base's thermodynamic strength to calculate a probability score:</p>
+                    
+                    <div class="bg-slate-900/50 p-4 rounded-lg my-4 font-mono text-xs text-green-400 overflow-x-auto">
+                        # Simplified logic snippet<br>
+                        if substrate == SECONDARY and base == STRONG:<br>
+                        &nbsp;&nbsp;score[E2] += 25.0<br>
+                        &nbsp;&nbsp;if temp > 80:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;score[E2] += 15.0 # Entropy favors elimination
+                    </div>
+
+                    <p>The frontend, built with vanilla JS and the <strong>JSME Molecular Editor</strong>, visualizes these predictions step-by-step, explaining <em>why</em> a specific pathway is favored over another.</p>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
+                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
+                        <a href="https://aaronbrennan1.github.io/chemistry/" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fas fa-flask"></i> Launch Application
+                        </a>
+                    </div>
                 `
             },
             {
