@@ -173,7 +173,8 @@
                     </div>
                     <div>
                         <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Status</span>
-                        <span class="text-primary">Available for hire</span>
+                        <span class="text-primary">CTO at <a class="underline" href="https://www.magnatesoftware.com" target="_blank">Magnate</a></span>
+                        <!-- <span class="text-primary underline">CTO at <a href="https://www.magnatesoftware.com" class="underline">Magnate</a></span> -->
                     </div>
                 </div>
             </div>
@@ -272,6 +273,30 @@
                 `
             },
             {
+                id: 'magnate',
+                title: 'Magnate',
+                category: 'FinTech',
+                tags: ['React Native', 'Firebase', 'Plaid API'],
+                image: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=1200',
+                description: 'Personal wealth management aggregator for cross-platform asset tracking.',
+                body: `
+                    <p>Magnate is a mobile-first application designed to aggregate investment portfolios, crypto wallets, and savings accounts into a single "Net Worth" view.</p>
+                    <p>The app connects to banking APIs (Plaid) to fetch real-time data. It uses a custom caching layer to ensure data availability even when offline.</p>
+                `
+            },
+            {
+                id: 'cobra',
+                title: 'COBRA Toolbox',
+                category: 'Research / Systems Bio',
+                tags: ['MATLAB', 'Bioinformatics', 'Optimization'],
+                image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
+                description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
+                body: `
+                    <p>During my Master's, I contributed to the COBRA (Constraint-Based Reconstruction and Analysis) Toolbox. This software suite is the industry standard for modeling metabolic networks.</p>
+                    <p>I focused on optimizing the Flux Balance Analysis (FBA) solver integration. By rewriting the core linear algebra interface, we achieved a 15% speedup in large-scale model simulations.</p>
+                `
+            },
+            {
                 id: 'fantasy',
                 title: 'Fantasy Analytics',
                 category: 'Data Science',
@@ -296,30 +321,8 @@
                     <p>Users can construct atoms, define bonds, and the physics engine automatically arranges them into the correct geometric shape based on electron repulsion forces.</p>
                 `
             },
-            {
-                id: 'magnate',
-                title: 'Magnate',
-                category: 'FinTech',
-                tags: ['React Native', 'Firebase', 'Plaid API'],
-                image: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&q=80&w=1200',
-                description: 'Personal wealth management aggregator for cross-platform asset tracking.',
-                body: `
-                    <p>Magnate is a mobile-first application designed to aggregate investment portfolios, crypto wallets, and savings accounts into a single "Net Worth" view.</p>
-                    <p>The app connects to banking APIs (Plaid) to fetch real-time data. It uses a custom caching layer to ensure data availability even when offline.</p>
-                `
-            },
-            {
-                id: 'cobra',
-                title: 'COBRA Toolbox',
-                category: 'Research / Systems Bio',
-                tags: ['MATLAB', 'Bioinformatics', 'Optimization'],
-                image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
-                description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
-                body: `
-                    <p>During my Master's, I contributed to the COBRA (Constraint-Based Reconstruction and Analysis) Toolbox. This software suite is the industry standard for modeling metabolic networks.</p>
-                    <p>I focused on optimizing the Flux Balance Analysis (FBA) solver integration. By rewriting the core linear algebra interface, we achieved a 15% speedup in large-scale model simulations.</p>
-                `
-            },
+            
+            
             {
                 id: 'pathfinder',
                 title: 'Equal Dist. Pathfinder',
