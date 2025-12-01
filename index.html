@@ -136,12 +136,9 @@
             <div class="md:col-span-5 order-2 md:order-1 relative group">
                 <div class="relative p-2 border border-white/10">
                     <div class="aspect-[4/5] overflow-hidden bg-surface relative image-container">
-                        <!-- <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800" 
-                             alt="Aaron Brennan" 
-                             class="w-full h-full object-cover image-filter"> -->
                         <img src="profile.png"
-                            alt="Aaron Brennan"
-                            class="w-full h-full object-cover image-filter">
+                             alt="Aaron Brennan"
+                             class="w-full h-full object-cover image-filter">
                     </div>
                 </div>
             </div>
@@ -150,8 +147,7 @@
                 <div>
                     <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 leading-[0.9]">
                         Computer Scientist <br>
-                        <!-- <span class="text-white">Experiences.</span> -->
-                    </h1>
+                        </h1>
                     <div class="h-1 w-20 bg-primary mb-8"></div>
                     <p class="text-lg md:text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
                         I'm Aaron, a developer focused on building complex digital systems and data-driven applications. My work spans the gap between biological analysis and software engineering—creating tools that are as robust as they are intuitive.
@@ -174,8 +170,7 @@
                     <div>
                         <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Status</span>
                         <span class="text-primary">CTO at <a class="underline" href="https://www.magnatesoftware.com" target="_blank">Magnate</a></span>
-                        <!-- <span class="text-primary underline">CTO at <a href="https://www.magnatesoftware.com" class="underline">Magnate</a></span> -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -256,20 +251,29 @@
         const projects = [
             {
                 id: 'respiration',
-                title: 'Respiration Detection',
-                category: 'BioTech / IoT',
-                tags: ['Python', 'Signal Processing', 'IoT', 'Hardware'],
-                image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1200',
-                description: 'Real-time breath pattern analysis utilizing custom circuitry and DSP filtering.',
+                title: 'Thermal Respiration Detection',
+                category: 'Deep Learning / Research',
+                tags: ['PyTorch', 'Computer Vision', 'Thermal Imaging', 'Research'],
+                image: 'https://images.unsplash.com/photo-1516110833967-0b5716ca1387?auto=format&fit=crop&q=80&w=1200',
+                description: 'A novel Deep Learning approach to monitoring driver fatigue using thermal imagery.',
                 body: `
-                    <p>Detecting respiration rates accurately in non-invasive ways is a challenge in modern wearable tech. This project bridges the gap between hardware sensors and software analysis.</p>
-                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Technical Approach</h3>
-                    <p>Standard piezoelectric sensors introduce significant noise when the subject is moving. The goal was to create a filtering algorithm that could isolate the breath wave from motion artifacts.</p>
-                    <ul class="list-disc pl-5 space-y-2 mt-4 text-gray-400">
-                        <li>Designed high-gain signal amplification schematics.</li>
-                        <li>Implemented FFT (Fast Fourier Transform) in SciPy.</li>
-                        <li>Streamed clean data via MQTT to a React dashboard.</li>
-                    </ul>
+                    <p>Driver fatigue is a critical global issue contributing to roughly 20% of fatal crashes. In collaboration with the University of Galway and Xperi, we developed a non-invasive system to monitor driver respiration rates—a key physiological indicator of drowsiness—using thermal cameras.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Methodology</h3>
+                    <p>Unlike traditional methods that rely on extracting signals from specific facial regions (which fail when the driver moves), our approach utilizes a <strong>ResNet-18</strong> deep learning model to predict respiration rates directly from full thermal video frames. The system is efficient enough to run inference in 20ms, making it viable for real-time automotive applications.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Innovation: Backward Loss</h3>
+                    <p>A major challenge in automotive computer vision is the "noise" introduced by a moving car. To solve this, we implemented a novel data augmentation technique called <strong>Backward Loss</strong>. By reversing the input video frames during training and enforcing consistency between forward and backward predictions, we taught the model to be "temporally invariant." This significantly improved performance in dynamic driving environments.</p>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
+                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
+                        <a href="poster.pdf" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fas fa-file-pdf"></i> View Research Poster (PDF)
+                        </a>
+                        <a href="https://ieeexplore.ieee.org/document/10162104" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fas fa-external-link-alt"></i> Read Article on IEEE Xplore
+                        </a>
+                    </div>
                 `
             },
             {
