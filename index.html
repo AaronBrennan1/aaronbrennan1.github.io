@@ -248,6 +248,7 @@
 
     <script>
         // --- Data Repository ---
+        // --- Data Repository ---
         const projects = [
             {
                 id: 'respiration',
@@ -289,15 +290,27 @@
                 `
             },
             {
-                id: 'cobra',
-                title: 'COBRA Toolbox',
-                category: 'Research / Systems Bio',
-                tags: ['MATLAB', 'Bioinformatics', 'Optimization'],
-                image: 'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&q=80&w=1200',
-                description: 'Contribution to constraint-based reconstruction and analysis for genome-scale models.',
+                id: 'kcat-gnn',
+                title: 'Enzyme Kcat Prediction',
+                category: 'Machine Learning / Bio',
+                tags: ['PyTorch', 'GNN', 'Bioinformatics', 'Python'],
+                image: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=1200',
+                description: 'Predicting enzymatic turnover rates using Graph Neural Networks and ensemble architectures.',
                 body: `
-                    <p>During my Master's, I contributed to the COBRA (Constraint-Based Reconstruction and Analysis) Toolbox. This software suite is the industry standard for modeling metabolic networks.</p>
-                    <p>I focused on optimizing the Flux Balance Analysis (FBA) solver integration. By rewriting the core linear algebra interface, we achieved a 15% speedup in large-scale model simulations.</p>
+                    <p>Completed as part of my MSc thesis at the <strong>University of Galway</strong>, this research project focuses on predicting the catalytic turnover rate ($k_{cat}$) of enzymes using Deep Learning.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Graph Representation</h3>
+                    <p>Standard ML approaches often treat protein sequences as 1D text. I improved feature extraction by converting <strong>FASTA</strong> (protein) and <strong>SMILES</strong> (substrate) sequences into complex graph structures, capturing the spatial relationships between atoms.</p>
+
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Architecture & Results</h3>
+                    <p>I utilized <strong>PyTorch</strong> to build and compare Graph Convolutional Networks (GCN) and Graph Attention Networks (GAT). While individual models hovered around an R² of 0.3, my final architecture—a <strong>3-way Ensemble GCN</strong>—achieved a test R² of <strong>0.419</strong>, demonstrating that combining structural protein data with molecular graphs significantly improves prediction accuracy.</p>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
+                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
+                        <a href="https://github.com/AaronBrennan1/Kcat_GNN/" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fab fa-github"></i> View Project on GitHub
+                        </a>
+                    </div>
                 `
             },
             {
@@ -325,8 +338,6 @@
                     <p>Users can construct atoms, define bonds, and the physics engine automatically arranges them into the correct geometric shape based on electron repulsion forces.</p>
                 `
             },
-            
-            
             {
                 id: 'pathfinder',
                 title: 'Equal Dist. Pathfinder',
@@ -350,7 +361,6 @@
                     <p>Jingle is a lightweight Digital Audio Workstation (DAW) built for the browser. It allows multiple musicians to edit MIDI sequences and record audio tracks in the same session.</p>
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">Core Features</h3>
                     <p>The project leverages WebAssembly for the DSP (Digital Signal Processing) engine to ensure near-native performance for effects like reverb and compression.</p>
-                    <p><em>(Placeholder text: Edit this description to reflect specific features or technical challenges solved during development.)</em></p>
                 `
             }
         ];
