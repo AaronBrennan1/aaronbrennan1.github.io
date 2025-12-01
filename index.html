@@ -339,15 +339,30 @@
                 `
             },
             {
-                id: 'pathfinder',
-                title: 'Equal Dist. Pathfinder',
-                category: 'Algorithms',
-                tags: ['C++', 'Graph Theory', 'Multi-Agent'],
-                image: 'https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&q=80&w=1200',
-                description: 'Solving the multi-agent routing problem with equal-cost arrival constraints.',
+                id: 'midpoint',
+                title: 'Meet in the Middle',
+                category: 'Web App / Algorithms',
+                tags: ['JavaScript', 'Google Maps API', 'Geometry', 'Tailwind'],
+                image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200',
+                description: 'A geospatial algorithm tool to calculate optimal meeting points using polyline interpolation and spherical trigonometry.',
                 body: `
-                    <p>A specialized pathfinding algorithm. Unlike A* which finds the shortest path for one agent, this engine calculates paths for multiple agents such that they arrive at their destinations simultaneously.</p>
-                    <p>This logic is crucial for warehouse robotics and drone swarm coordination where collision avoidance and timing are critical.</p>
+                    <p>Deciding where to meet a friend living on the other side of the city is often a guessing game. I built <strong>Meet in the Middle</strong> to solve this mathematically.</p>
+                    <p>The application offers two distinct algorithmic approaches to finding a meeting spot: traversing the road network or calculating geometric intersections.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Route Interpolation</h3>
+                    <p>The standard mode goes beyond simple geographic centers. It utilizes the <strong>Directions API</strong> to generate a complex polyline of the walking or driving route. The system then calculates the total path distance and performs a vertex interpolation to find the exact coordinate located at $d_{total} * 0.5$ along the road network, ensuring true travel-time fairness.</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Circle Intersection Logic</h3>
+                    <p>For the "Distance" mode, I implemented a spherical geometry engine. By treating the two starting points as centers of two circles with radius $r$, the app calculates the two specific coordinates where the perimeters intersect.</p>
+                    <p>This involved implementing spherical trigonometry formulas to determine the intersection height $h$ based on the chord between the two origins ($d$):</p>
+                    <p class="font-mono text-sm text-gray-400 mt-2">$$h = \\sqrt{r^2 - (d/2)^2}$$</p>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
+                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
+                        <a href="https://app.magnatesoftware.com/midpoint-finder" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fas fa-external-link-alt"></i> Launch Application
+                        </a>
+                    </div>
                 `
             },
             {
