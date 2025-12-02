@@ -161,7 +161,7 @@
                     </div>
                     <div>
                         <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Location</span>
-                        <span class="text-white">Dublin, Ireland</span>
+                        <span class="text-white">Galway, Ireland</span>
                     </div>
                     <div>
                         <span class="block text-xs uppercase tracking-wider mb-1 opacity-50">Tech Stack</span>
@@ -315,15 +315,37 @@
             },
             {
                 id: 'fantasy',
-                title: 'Fantasy Analytics',
-                category: 'Data Science',
-                tags: ['Pandas', 'Scikit-Learn', 'Regression', 'API'],
-                image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=1200',
-                description: 'Predictive modeling for fantasy football utilizing 5 years of historical NFL data.',
+                title: 'FPL Moneyball Analytics',
+                category: 'Data Science / Visualization',
+                tags: ['Python', 'Pandas', 'Matplotlib', 'FPL API'],
+                image: 'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?auto=format&fit=crop&q=80&w=1200',
+                description: 'Statistical analysis and visualization of Fantasy Premier League player performance to identify high-value assets.',
                 body: `
-                    <p>An experiment in applying statistical rigor to the chaotic world of Fantasy Football. This project focuses on finding value where the general public misses it.</p>
-                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Model</h3>
-                    <p>I trained a Random Forest Regressor on 5 years of player stats. The model accounts for opponent defense ranking, weather conditions (via API), and player injury history to project weekly points.</p>
+                    <p>This project moves away from gut feeling and uses Python to mathematically determine player value in the Fantasy Premier League (FPL).</p>
+                    
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Data Pipeline</h3>
+                    <p>The system connects to the <code>bootstrap-static</code> API endpoint to fetch real-time data on all Premier League players. Using <strong>Pandas</strong>, the JSON data is parsed into structured DataFrames to isolate key metrics such as <code>ict_index</code>, <code>form</code>, <code>transfers_in</code>, and <code>now_cost</code>.</p>
+
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Visualizing ROI</h3>
+                    <p>The core of the analysis focuses on "Value" (Points per Million spent). I utilized <strong>Matplotlib</strong> to generate scatter plots that visualize the correlation between a player's cost and their total point output.</p>
+                    
+                    <p>By filtering positions and using the <code>nlargest()</code> function, the script automatically identifies the top 5 "value players" per position (GK, DEF, MID, FWD)—highlighting underpriced assets that are outperforming their price tag.</p>
+
+                     <div class="bg-slate-900/50 p-4 rounded-lg my-4 font-mono text-xs text-green-400 overflow-x-auto">
+                        # Identifying top value players per position<br>
+                        top5_mid_df = mid_df.nlargest(5, 'value')<br>
+                        top5_fwd_df = fwd_df.nlargest(5, 'value')<br>
+                        <br>
+                        # Plotting Value vs Total Points<br>
+                        ax = top5_gk_df.plot.scatter(x='value', y='total_points')
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
+                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
+                        <a href="https://github.com/AaronBrennan1/FPL_Stats" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
+                            <i class="fab fa-github"></i> View Project on GitHub
+                        </a>
+                    </div>
                 `
             },
             {
