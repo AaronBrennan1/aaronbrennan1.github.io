@@ -36,17 +36,15 @@
         body {
             background-color: #050505;
             color: #e0e0e0;
+            cursor: none;
             overflow-x: hidden;
             font-family: 'Space Grotesk', sans-serif;
         }
 
-        /* Enable custom cursor only on non-touch devices */
-        @media (hover: hover) and (pointer: fine) {
+        /* Restore default cursor on touch/mobile devices */
+        @media (hover: none), (pointer: coarse) {
             body {
-                cursor: none;
-            }
-            .cursor-dot, .cursor-circle {
-                display: block;
+                cursor: auto;
             }
         }
 
@@ -63,16 +61,14 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
 
-        /* --- Custom Cursor (hidden by default, shown via media query above) --- */
+        /* --- Custom Cursor --- */
         .cursor-dot {
-            display: none;
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 6px; height: 6px; background-color: #fff; 
             border-radius: 50%; z-index: 9999; pointer-events: none;
             mix-blend-mode: difference;
         }
         .cursor-circle {
-            display: none;
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 40px; height: 40px; 
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -81,11 +77,16 @@
             transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
 
-        @media (hover: hover) and (pointer: fine) {
-            body:hover .cursor-circle.hovered {
-                width: 60px; height: 60px; 
-                border-color: #00f0ff;
-                background-color: rgba(0, 240, 255, 0.05);
+        body:hover .cursor-circle.hovered {
+            width: 60px; height: 60px; 
+            border-color: #00f0ff;
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+
+        /* Hide custom cursor on touch/mobile devices */
+        @media (hover: none), (pointer: coarse) {
+            .cursor-dot, .cursor-circle {
+                display: none !important;
             }
         }
 
