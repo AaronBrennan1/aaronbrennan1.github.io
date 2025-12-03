@@ -22,7 +22,7 @@
                         bg: '#050505',
                         surface: '#0f0f11',
                         border: '#1f1f22',
-                        primary: '#00f0ff', // Cyber Cyan (kept for the slick hover)
+                        primary: '#00f0ff',
                         secondary: '#7000ff', 
                         text: '#e0e0e0',
                         muted: '#888888'
@@ -36,15 +36,23 @@
         body {
             background-color: #050505;
             color: #e0e0e0;
-            cursor: none;
             overflow-x: hidden;
             font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Enable custom cursor only on non-touch devices */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none;
+            }
+            .cursor-dot, .cursor-circle {
+                display: block;
+            }
         }
 
         /* --- Subtle Texture Overlay --- */
         .scanlines {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50;
-            /* Much more subtle scanline effect */
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02));
             background-size: 100% 3px;
         }
@@ -55,14 +63,16 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
 
-        /* --- Custom Cursor --- */
+        /* --- Custom Cursor (hidden by default, shown via media query above) --- */
         .cursor-dot {
+            display: none;
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 6px; height: 6px; background-color: #fff; 
             border-radius: 50%; z-index: 9999; pointer-events: none;
             mix-blend-mode: difference;
         }
         .cursor-circle {
+            display: none;
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             width: 40px; height: 40px; 
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -71,10 +81,12 @@
             transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
 
-        body:hover .cursor-circle.hovered {
-            width: 60px; height: 60px; 
-            border-color: #00f0ff;
-            background-color: rgba(0, 240, 255, 0.05);
+        @media (hover: hover) and (pointer: fine) {
+            body:hover .cursor-circle.hovered {
+                width: 60px; height: 60px; 
+                border-color: #00f0ff;
+                background-color: rgba(0, 240, 255, 0.05);
+            }
         }
 
         /* --- Slick Images --- */
@@ -240,16 +252,13 @@
                     </div>
             </div>
 
-            <div class="p-6 border-t border-white/10 bg-surface">
-                <a href="#" class="interactive block w-full py-3 text-center border border-white/20 text-xs font-mono uppercase tracking-wider hover:bg-white hover:text-black hover:border-white transition-all">
-                    View Source Code
-                </a>
+            <div id="modal-footer" class="p-6 border-t border-white/10 bg-surface">
+                <!-- Dynamic links will be injected here -->
             </div>
         </div>
     </div>
 
     <script>
-        // --- Data Repository ---
         // --- Data Repository ---
         const projects = [
             {
@@ -259,6 +268,10 @@
                 tags: ['PyTorch', 'Computer Vision', 'Thermal Imaging', 'Research'],
                 image: 'https://images.unsplash.com/photo-1516110833967-0b5716ca1387?auto=format&fit=crop&q=80&w=1200',
                 description: 'A novel Deep Learning approach to monitoring driver fatigue using thermal imagery.',
+                links: [
+                    { label: 'View Research Poster', url: 'poster.pdf', icon: 'fas fa-file-pdf' },
+                    { label: 'Read on IEEE Xplore', url: 'https://ieeexplore.ieee.org/document/10162104', icon: 'fas fa-external-link-alt' }
+                ],
                 body: `
                     <p>Driver fatigue is a critical global issue contributing to roughly 20% of fatal crashes. In collaboration with the University of Galway and Xperi, we developed a non-invasive system to monitor driver respiration rates—a key physiological indicator of drowsiness—using thermal cameras.</p>
                     
@@ -267,16 +280,6 @@
                     
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">Innovation: Backward Loss</h3>
                     <p>A major challenge in automotive computer vision is the "noise" introduced by a moving car. To solve this, we implemented a novel data augmentation technique called <strong>Backward Loss</strong>. By reversing the input video frames during training and enforcing consistency between forward and backward predictions, we taught the model to be "temporally invariant." This significantly improved performance in dynamic driving environments.</p>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="poster.pdf" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fas fa-file-pdf"></i> View Research Poster (PDF)
-                        </a>
-                        <a href="https://ieeexplore.ieee.org/document/10162104" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fas fa-external-link-alt"></i> Read Article on IEEE Xplore
-                        </a>
-                    </div>
                 `
             },
             {
@@ -286,6 +289,9 @@
                 tags: ['Next.js', 'FastAPI', 'AWS', 'PostgreSQL'],
                 image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200',
                 description: 'Co-founded a SaaS platform for recruiters. Built with Next.js and Python to handle AI screening and scheduling.',
+                links: [
+                    { label: 'Visit Website', url: 'https://www.magnatesoftware.com', icon: 'fas fa-globe' }
+                ],
                 body: `
                     <p>I co-founded Magnate to help recruiters manage their workflows. It's a SaaS application that handles ATS features, automated CV screening, and meeting scheduling.</p>
                     <p>As CTO, I handle the technical direction and infrastructure decisions.</p>
@@ -293,13 +299,6 @@
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Stack</h3>
                     <p>The frontend is built with <strong>Next.js</strong> and deployed on <strong>Vercel</strong>. I chose this for the straightforward CI/CD and solid developer experience.</p>
                     <p>For the backend, we run <strong>FastAPI</strong> on <strong>AWS</strong> with a <strong>PostgreSQL</strong> database. Since the core product features rely heavily on AI (specifically for parsing and screening CVs), sticking to a Python backend allowed us to keep the ML logic and the API layer tightly integrated without unnecessary overhead.</p>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://www.magnatesoftware.com" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fas fa-globe"></i> Visit Live Website
-                        </a>
-                    </div>
                 `
             },
             {
@@ -309,6 +308,9 @@
                 tags: ['PyTorch', 'GNN', 'Bioinformatics', 'Python'],
                 image: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=1200',
                 description: 'Predicting enzymatic turnover rates using Graph Neural Networks and ensemble architectures.',
+                links: [
+                    { label: 'View on GitHub', url: 'https://github.com/AaronBrennan1/Kcat_GNN/', icon: 'fab fa-github' }
+                ],
                 body: `
                     <p>Completed as part of my MSc thesis at the <strong>University of Galway</strong>, this research project focuses on predicting the catalytic turnover rate ($k_{cat}$) of enzymes using Deep Learning.</p>
                     
@@ -317,13 +319,6 @@
 
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">Architecture & Results</h3>
                     <p>I utilized <strong>PyTorch</strong> to build and compare Graph Convolutional Networks (GCN) and Graph Attention Networks (GAT). While individual models hovered around an R² of 0.3, my final architecture—a <strong>3-way Ensemble GCN</strong>—achieved a test R² of <strong>0.419</strong>, demonstrating that combining structural protein data with molecular graphs significantly improves prediction accuracy.</p>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://github.com/AaronBrennan1/Kcat_GNN/" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fab fa-github"></i> View Project on GitHub
-                        </a>
-                    </div>
                 `
             },
             {
@@ -333,6 +328,9 @@
                 tags: ['Python', 'Pandas', 'Matplotlib', 'FPL API'],
                 image: 'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?auto=format&fit=crop&q=80&w=1200',
                 description: 'Statistical analysis and visualization of Fantasy Premier League player performance to identify high-value assets.',
+                links: [
+                    { label: 'View on GitHub', url: 'https://github.com/AaronBrennan1/FPL_Stats', icon: 'fab fa-github' }
+                ],
                 body: `
                     <p>This project moves away from gut feeling and uses Python to mathematically determine player value in the Fantasy Premier League (FPL).</p>
                     
@@ -352,13 +350,6 @@
                         # Plotting Value vs Total Points<br>
                         ax = top5_gk_df.plot.scatter(x='value', y='total_points')
                     </div>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://github.com/AaronBrennan1/FPL_Stats" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fab fa-github"></i> View Project on GitHub
-                        </a>
-                    </div>
                 `
             },
             {
@@ -368,19 +359,20 @@
                 tags: ['Python', 'RDKit', 'Algorithms', 'Flask'],
                 image: 'https://images.unsplash.com/photo-1603126857599-f6e1b70d4c18?auto=format&fit=crop&q=80&w=1200',
                 description: 'A rule-based expert system utilizing RDKit to predict organic reaction pathways (SN1/SN2/E1/E2) based on substrate topology and conditions.',
+                links: [
+                    { label: 'Launch Application', url: 'https://aaronbrennan1.github.io/chemistry/', icon: 'fas fa-flask' }
+                ],
                 body: `
                     <p>Organic chemistry students often treat reaction mechanisms as rote memorization. I built this tool to demonstrate the logic behind reactivity, using a Python backend to analyze molecular graphs in real-time.</p>
                     
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">Graph-Based Substrate Analysis</h3>
-                    <p>Instead of using machine learning (which can be a "black box"), this project uses <strong>RDKit</strong> to perform deterministic graph traversal. The algorithm identifies the $\alpha$-carbon and analyzes its connectivity to determine steric hindrance and resonance capabilities.</p>
+                    <p>Instead of using machine learning (which can be a "black box"), this project uses <strong>RDKit</strong> to perform deterministic graph traversal. The algorithm identifies the $\\alpha$-carbon and analyzes its connectivity to determine steric hindrance and resonance capabilities.</p>
                     <p>It programmatically detects complex structural features:</p>
                     <ul class="list-disc list-inside text-gray-400 mt-2 space-y-1">
                         <li><strong>Neopentyl centers:</strong> Detecting beta-branching that hinders $S_N2$ attacks.</li>
-                        <li><strong>Allylic/Benzylic stabilization:</strong> Checking for conjugated $\pi$-systems that stabilize carbocation intermediates.</li>
+                        <li><strong>Allylic/Benzylic stabilization:</strong> Checking for conjugated $\\pi$-systems that stabilize carbocation intermediates.</li>
                         <li><strong>Carbocation Rearrangement:</strong> Algorithms that predict if a 1,2-hydride or methyl shift will occur to form a more stable tertiary center.</li>
                     </ul>
-
-                    
 
                     <h3 class="text-white font-bold mt-6 mb-3 text-lg">The Scoring Engine</h3>
                     <p>The core logic uses a weighted scoring matrix to rank competing mechanisms ($S_N1$, $S_N2$, $E1$, $E2$). The system evaluates the environmental conditions against the substrate's physical properties.</p>
@@ -395,13 +387,6 @@
                     </div>
 
                     <p>The frontend, built with vanilla JS and the <strong>JSME Molecular Editor</strong>, visualizes these predictions step-by-step, explaining <em>why</em> a specific pathway is favored over another.</p>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://aaronbrennan1.github.io/chemistry/" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fas fa-flask"></i> Launch Application
-                        </a>
-                    </div>
                 `
             },
             {
@@ -411,6 +396,9 @@
                 tags: ['JavaScript', 'Google Maps API', 'Geometry', 'Tailwind'],
                 image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200',
                 description: 'A geospatial algorithm tool to calculate optimal meeting points using polyline interpolation and spherical trigonometry.',
+                links: [
+                    { label: 'Launch Application', url: 'https://app.magnatesoftware.com/midpoint-finder', icon: 'fas fa-external-link-alt' }
+                ],
                 body: `
                     <p>Deciding where to meet a friend living on the other side of the city is often a guessing game. I built <strong>Meet in the Middle</strong> to solve this mathematically.</p>
                     <p>The application offers two distinct algorithmic approaches to finding a meeting spot: traversing the road network or calculating geometric intersections.</p>
@@ -422,13 +410,6 @@
                     <p>For the "Distance" mode, I implemented a spherical geometry engine. By treating the two starting points as centers of two circles with radius $r$, the app calculates the two specific coordinates where the perimeters intersect.</p>
                     <p>This involved implementing spherical trigonometry formulas to determine the intersection height $h$ based on the chord between the two origins ($d$):</p>
                     <p class="font-mono text-sm text-gray-400 mt-2">$$h = \\sqrt{r^2 - (d/2)^2}$$</p>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://app.magnatesoftware.com/midpoint-finder" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fas fa-external-link-alt"></i> Launch Application
-                        </a>
-                    </div>
                 `
             },
             {
@@ -438,6 +419,9 @@
                 tags: ['JavaScript', 'Firebase', 'HTML5/CSS3', 'Web Audio API'],
                 image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&q=80&w=1200',
                 description: 'A "Social Sequencer" web app where users compose short musical loops and post them to a shared feed.',
+                links: [
+                    { label: 'Watch Demo Video', url: 'https://youtu.be/D7FIhBfKs2c', icon: 'fab fa-youtube' }
+                ],
                 body: `
                     <p>Jingle is a unique blend of a Digital Audio Workstation (DAW) and a social network. The goal was to lower the barrier to entry for music production by allowing users to create and share beats directly in the browser.</p>
                     
@@ -451,13 +435,6 @@
                         <li><strong>Firestore:</strong> Stores the musical pattern data (JSON) and user profiles.</li>
                         <li><strong>Real-time Feed:</strong> The main dashboard fetches the latest creations from the database, allowing users to listen to ("playback") tracks created by the community.</li>
                     </ul>
-
-                    <div class="mt-8 pt-4 border-t border-white/10 flex flex-col gap-3 text-sm">
-                        <span class="text-gray-500 text-xs uppercase tracking-wider">Resources</span>
-                        <a href="https://youtu.be/D7FIhBfKs2c" target="_blank" class="text-primary hover:text-white transition-colors flex items-center gap-2">
-                            <i class="fab fa-youtube"></i> Watch Demo Video
-                        </a>
-                    </div>
                 `
             }
         ];
@@ -467,8 +444,7 @@
         
         projects.forEach(project => {
             const card = document.createElement('div');
-            // Using bg-bg to create the grid lines effect against the parent gap
-            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-80 flex flex-col justify-between transition-colors hover:bg-[#111] cursor-none`;
+            card.className = `group relative bg-[#0a0a0c] p-8 interactive h-80 flex flex-col justify-between transition-colors hover:bg-[#111]`;
             card.onclick = () => openModal(project.id);
 
             card.innerHTML = `
@@ -497,6 +473,7 @@
         const modalBody = document.getElementById('modal-body');
         const modalImage = document.getElementById('modal-image');
         const modalTags = document.getElementById('modal-tags');
+        const modalFooter = document.getElementById('modal-footer');
 
         function openModal(id) {
             const project = projects.find(p => p.id === id);
@@ -511,6 +488,20 @@
                 `<span class="text-black bg-white px-2 py-1 text-[10px] font-bold font-mono uppercase">${tag}</span>`
             ).join('');
 
+            // Dynamically render footer links based on project.links
+            if (project.links && project.links.length > 0) {
+                modalFooter.innerHTML = project.links.map(link => 
+                    `<a href="${link.url}" target="_blank" class="interactive flex items-center justify-center gap-3 w-full py-3 text-center border border-white/20 text-xs font-mono uppercase tracking-wider hover:bg-white hover:text-black hover:border-white transition-all mb-2 last:mb-0">
+                        <i class="${link.icon}"></i>
+                        <span>${link.label}</span>
+                    </a>`
+                ).join('');
+                modalFooter.classList.remove('hidden');
+            } else {
+                modalFooter.innerHTML = '';
+                modalFooter.classList.add('hidden');
+            }
+
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -524,30 +515,35 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // --- Interaction Logic (Cursor) ---
+        // --- Interaction Logic (Cursor) - Only runs on non-touch devices ---
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
 
-        window.addEventListener('mousemove', (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
-            
-            cursorDot.style.left = `${x}px`;
-            cursorDot.style.top = `${y}px`;
-            
-            cursorCircle.animate({
-                left: `${x}px`,
-                top: `${y}px`
-            }, { duration: 400, fill: "forwards" });
-        });
+        // Check if device supports hover (non-touch)
+        const hasHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest('.interactive')) {
-                cursorCircle.classList.add('hovered');
-            } else {
-                cursorCircle.classList.remove('hovered');
-            }
-        });
+        if (hasHover) {
+            window.addEventListener('mousemove', (e) => {
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                cursorDot.style.left = `${x}px`;
+                cursorDot.style.top = `${y}px`;
+                
+                cursorCircle.animate({
+                    left: `${x}px`,
+                    top: `${y}px`
+                }, { duration: 400, fill: "forwards" });
+            });
+
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.closest('.interactive')) {
+                    cursorCircle.classList.add('hovered');
+                } else {
+                    cursorCircle.classList.remove('hovered');
+                }
+            });
+        }
 
         // --- Background Noise (Subtle) ---
         const canvas = document.getElementById('canvas-container');
@@ -575,7 +571,6 @@
             ctx.putImageData(idata, 0, 0);
         }
         
-        // Lower frame rate for noise to save CPU and give "retro" feel
         setInterval(drawNoise, 100);
 
     </script>
