@@ -415,21 +415,34 @@
                 category: 'Web App / Algorithms',
                 tags: ['JavaScript', 'Google Maps API', 'Geometry', 'Tailwind'],
                 image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200',
-                description: 'A geospatial algorithm tool to calculate optimal meeting points using polyline interpolation and spherical trigonometry.',
+                description: 'A geospatial tool that finds optimal meeting points using either walking route interpolation or spherical circle intersection algorithms.',
                 links: [
                     { label: 'Launch Application', url: 'https://app.magnatesoftware.com/midpoint-finder', icon: 'fas fa-external-link-alt' }
                 ],
                 body: `
-                    <p>Deciding where to meet a friend living on the other side of the city is often a guessing game. I built <strong>Meet in the Middle</strong> to solve this mathematically.</p>
-                    <p>The application offers two distinct algorithmic approaches to finding a meeting spot: traversing the road network or calculating geometric intersections.</p>
+                    <p>Deciding where to meet someone across town shouldn't be a guessing game. <strong>Meet in the Middle</strong> solves this with two distinct algorithmic approaches.</p>
                     
-                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Route Interpolation</h3>
-                    <p>The standard mode goes beyond simple geographic centers. It utilizes the <strong>Directions API</strong> to generate a complex polyline of the walking or driving route. The system then calculates the total path distance and performs a vertex interpolation to find the exact coordinate located at <span class="formula">d<sub>total</sub> × 0.5</span> along the road network, ensuring true travel-time fairness.</p>
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Method 1: Route Interpolation</h3>
+                    <p>The "By Route" mode doesn't just find one path—it actively searches for creative alternatives. The system first fetches standard walking routes via the <strong>Directions API</strong>, then generates additional waypoints by calculating geometric offsets perpendicular to the route at 33% and 66% intervals.</p>
+                    <p>For each unique route discovered (up to 20), the algorithm traverses the <code>overview_path</code> polyline and identifies the vertex at the exact halfway point. Each midpoint is then reverse-geocoded to provide a street address and Eircode.</p>
                     
-                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Circle Intersection Logic</h3>
-                    <p>For the "Distance" mode, I implemented a spherical geometry engine. By treating the two starting points as centers of two circles with radius <span class="formula">r</span>, the app calculates the two specific coordinates where the perimeters intersect.</p>
-                    <p>This involved implementing spherical trigonometry formulas to determine the intersection height <span class="formula">h</span> based on the chord between the two origins (<span class="formula">d</span>):</p>
+                    <div class="bg-slate-900/50 p-4 rounded-lg my-4 font-mono text-xs text-green-400 overflow-x-auto">
+                        // Generating offset waypoints for creative route discovery<br>
+                        const offsets = [-90, 90, -45, 45];<br>
+                        const fractions = [0.33, 0.66];<br>
+                        fractions.forEach(fraction => {<br>
+                        &nbsp;&nbsp;const intermediate = computeOffset(start, distance * fraction, heading);<br>
+                        &nbsp;&nbsp;offsets.forEach(offset => {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;waypoints.push(computeOffset(intermediate, distance * 0.25, heading + offset));<br>
+                        &nbsp;&nbsp;});<br>
+                        });
+                    </div>
+
+                    <h3 class="text-white font-bold mt-6 mb-3 text-lg">Method 2: Circle Intersection</h3>
+                    <p>The "By Distance" mode uses pure spherical geometry. By treating each starting location as the center of a circle with a user-defined radius <span class="formula">r</span>, the app calculates the two exact coordinates where the circles intersect.</p>
+                    <p>The algorithm computes the intersection height <span class="formula">h</span> from the chord connecting the two origins, then offsets perpendicular to the heading:</p>
                     <div class="formula-block">h = √(r² − (d/2)²)</div>
+                    <p>Both intersection points are plotted on the map and reverse-geocoded, giving users two equidistant meeting options.</p>
                 `
             },
             {
